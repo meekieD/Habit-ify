@@ -1,4 +1,4 @@
-package com.dyusov.habit_ify.ui.theme
+package com.dyusov.habit_ify.presentation.theme.ui
 
 import androidx.compose.ui.graphics.Color
 
