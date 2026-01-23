@@ -1,4 +1,4 @@
-package com.dyusov.database.entity
+package com.dyusov.core.database.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
