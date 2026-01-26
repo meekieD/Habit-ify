@@ -13,7 +13,7 @@ interface HabitCompletionRepository {
 
     fun getCompletionsByDate(date: LocalDate): Flow<List<HabitCompletion>>
 
-    suspend fun getCompletionsByDate(habitId: Long, date: LocalDate): List<HabitCompletion>
+    suspend fun getCompletionsForHabitOnDate(habitId: Long, date: LocalDate): List<HabitCompletion>
 
     suspend fun addCompletion(habitId: Long, timestamp: Long = System.currentTimeMillis())
 

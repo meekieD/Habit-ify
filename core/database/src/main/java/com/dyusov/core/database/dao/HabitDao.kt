@@ -27,14 +27,14 @@ interface HabitDao {
     suspend fun getHabit(habitId: Long): HabitDbModel
 
     /**
-     * Get habits with history info
+     * Get habits with completions info
      */
 
     @Transaction
     @Query("SELECT * FROM habits WHERE id = :habitId")
-    suspend fun getHabitWithHistory(habitId: Long): HabitWithCompletionsDbModel
+    suspend fun getHabitWithCompletions(habitId: Long): HabitWithCompletionsDbModel
 
     @Transaction
     @Query("SELECT * FROM habits")
-    fun getAllHabitsWithHistory(): Flow<List<HabitWithCompletionsDbModel>>
+    fun getAllHabitsWithCompletions(): Flow<List<HabitWithCompletionsDbModel>>
 }
