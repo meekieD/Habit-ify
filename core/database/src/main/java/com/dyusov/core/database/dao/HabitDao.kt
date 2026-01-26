@@ -5,7 +5,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
 import com.dyusov.core.database.entity.HabitDbModel
-import com.dyusov.core.database.entity.HabitWithHistory
+import com.dyusov.core.database.entity.HabitWithCompletionsDbModel
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -32,9 +32,9 @@ interface HabitDao {
 
     @Transaction
     @Query("SELECT * FROM habits WHERE id = :habitId")
-    suspend fun getHabitWithHistory(habitId: Long): HabitWithHistory
+    suspend fun getHabitWithHistory(habitId: Long): HabitWithCompletionsDbModel
 
     @Transaction
     @Query("SELECT * FROM habits")
-    fun getAllHabitsWithHistory(): Flow<List<HabitWithHistory>>
+    fun getAllHabitsWithHistory(): Flow<List<HabitWithCompletionsDbModel>>
 }

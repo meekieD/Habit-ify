@@ -6,7 +6,7 @@ import androidx.room.Relation
 /**
  * Represents a habit with its completion history.
  */
-data class HabitWithHistory(
+data class HabitWithCompletionsDbModel(
     @Embedded
     val habit: HabitDbModel,
     @Relation(
