@@ -38,6 +38,11 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:model"))
+    implementation(project(":core:database"))
+
+    implementation(libs.kotlinx.datetime)
+
     implementation(libs.androidx.core.ktx)
 
     testImplementation(libs.junit)

@@ -1,4 +1,4 @@
-package com.dyusov.core.database.repo
+package com.dyusov.core.data.repo
 
 import com.dyusov.core.model.Habit
 import com.dyusov.core.model.HabitWithCompletions
