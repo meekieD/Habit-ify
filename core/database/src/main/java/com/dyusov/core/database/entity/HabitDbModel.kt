@@ -24,5 +24,6 @@ data class HabitDbModel(
     val periodType: PeriodType?,
     val timesPerPeriod: Int?,
     val createdAt: Long,
-    val updatedAt: Long
+    val updatedAt: Long,
+    val color: String?
 )
