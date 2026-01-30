@@ -9,6 +9,11 @@ import com.dyusov.core.model.HabitCompletion
 import com.dyusov.core.model.HabitFrequency
 import com.dyusov.core.model.HabitWithCompletions
 import com.dyusov.core.model.PeriodType
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.plus
 import java.time.DayOfWeek
 
 object HabitColors {
@@ -100,6 +105,14 @@ fun List<HabitCompletion>.toDbModels(): List<HabitCompletionDbModel> {
     return map { it.toDbModel() }
 }
 
+fun List<HabitWithCompletionsDbModel>.toEntities(): List<HabitWithCompletions> {
+    return map { it.toEntity() }
+}
+
+fun List<HabitWithCompletions>.toDbModels(): List<HabitWithCompletionsDbModel> {
+    return map { it.toDbModel() }
+}
+
 private fun FrequencyType.toHabitFrequency(
     weeklyDays: Set<DayOfWeek>?,
     periodType: PeriodType?,
@@ -146,4 +159,15 @@ private fun HabitFrequency.getTimesPerPeriod(): Int? {
         is HabitFrequency.Custom -> this.timesPerPeriod
         else -> null
     }
+}
+
+fun LocalDate.toStartOfDayTimestamp(): Long {
+    return this.atStartOfDayIn(TimeZone.currentSystemDefault())
+        .toEpochMilliseconds()
+}
+
+fun LocalDate.toEndOfDayTimestamp(): Long {
+    return this.plus(1, DateTimeUnit.DAY)
+        .atStartOfDayIn(TimeZone.currentSystemDefault())
+        .toEpochMilliseconds()
 }
