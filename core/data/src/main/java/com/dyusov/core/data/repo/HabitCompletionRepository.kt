@@ -1,5 +1,7 @@
 package com.dyusov.core.data.repo
 
+import com.dyusov.core.common.utils.MyError
+import com.dyusov.core.common.utils.MyResult
 import com.dyusov.core.model.HabitCompletion
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
@@ -9,11 +11,14 @@ import kotlinx.datetime.LocalDate
  */
 interface HabitCompletionRepository {
 
-    fun getCompletionsByHabitId(habitId: Long): Flow<List<HabitCompletion>>
+    fun getCompletionsByHabitId(habitId: Long): Flow<MyResult<List<HabitCompletion>, MyError>>
 
-    fun getCompletionsByDate(date: LocalDate): Flow<List<HabitCompletion>>
+    fun getCompletionsByDate(date: LocalDate): Flow<MyResult<List<HabitCompletion>, MyError>>
 
-    suspend fun getCompletionsForHabitOnDate(habitId: Long, date: LocalDate): List<HabitCompletion>
+    fun getCompletionsForHabitOnDate(
+        habitId: Long,
+        date: LocalDate
+    ): Flow<MyResult<List<HabitCompletion>, MyError>>
 
     suspend fun addCompletion(habitId: Long, timestamp: Long = System.currentTimeMillis())
 
@@ -27,7 +32,7 @@ interface HabitCompletionRepository {
         habitId: Long,
         startTimestamp: Long,
         endTimestamp: Long
-    ): Int
+    ): MyResult<Int, MyError>
 
-    suspend fun isHabitCompletedOnDate(habitId: Long, date: LocalDate): Boolean
+    suspend fun isHabitCompletedOnDate(habitId: Long, date: LocalDate): MyResult<Boolean, MyError>
 }

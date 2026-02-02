@@ -40,10 +40,12 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:common"))
     implementation(project(":core:model"))
     implementation(project(":core:database"))
 
     implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.androidx.core.ktx)
 

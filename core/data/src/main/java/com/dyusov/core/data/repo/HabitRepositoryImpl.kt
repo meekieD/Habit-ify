@@ -1,5 +1,8 @@
 package com.dyusov.core.data.repo
 
+import com.dyusov.core.common.utils.MyError
+import com.dyusov.core.common.utils.MyResult
+import com.dyusov.core.data.utils.throwCancellationExceptionAndGeneralError
 import com.dyusov.core.data.utils.toDbModel
 import com.dyusov.core.data.utils.toEntities
 import com.dyusov.core.data.utils.toEntity
@@ -14,28 +17,40 @@ class HabitRepositoryImpl @Inject constructor(
     private val habitDao: HabitDao
 ) : HabitRepository {
 
-    override fun getAllHabits(): Flow<List<Habit>> {
+    override fun getAllHabits(): Flow<MyResult<List<Habit>, MyError>> {
         return habitDao.getAllHabits().map {
-            it.toEntities()
+            MyResult.Success(it.toEntities())
         }
     }
 
-    override fun getAllHabitsWithCompletions(): Flow<List<HabitWithCompletions>> {
+    override fun getAllHabitsWithCompletions(): Flow<MyResult<List<HabitWithCompletions>, MyError>> {
         return habitDao.getAllHabitsWithCompletions().map {
-            it.toEntities()
+            MyResult.Success(it.toEntities())
         }
     }
 
-    override suspend fun getHabitById(habitId: Long): Habit {
-        return habitDao.getHabit(habitId).toEntity()
+    override suspend fun getHabitById(habitId: Long): MyResult<Habit, MyError> {
+        return try {
+            MyResult.Success(habitDao.getHabit(habitId).toEntity())
+        } catch (_: Exception) {
+            throwCancellationExceptionAndGeneralError()
+        }
     }
 
-    override suspend fun getHabitWithCompletions(habitId: Long): HabitWithCompletions {
-        return habitDao.getHabitWithCompletions(habitId).toEntity()
+    override suspend fun getHabitWithCompletions(habitId: Long): MyResult<HabitWithCompletions, MyError> {
+        return try {
+            MyResult.Success(habitDao.getHabitWithCompletions(habitId).toEntity())
+        } catch (_: Exception) {
+            throwCancellationExceptionAndGeneralError()
+        }
     }
 
-    override suspend fun upsertHabit(habit: Habit): Long {
-        return habitDao.upsertHabit(habit.toDbModel())
+    override suspend fun upsertHabit(habit: Habit): MyResult<Long, MyError> {
+        return try {
+            MyResult.Success(habitDao.upsertHabit(habit.toDbModel()))
+        } catch (_: Exception) {
+            throwCancellationExceptionAndGeneralError()
+        }
     }
 
     override suspend fun deleteHabit(habitId: Long) {

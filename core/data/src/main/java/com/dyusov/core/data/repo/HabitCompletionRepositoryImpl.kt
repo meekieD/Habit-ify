@@ -1,5 +1,8 @@
 package com.dyusov.core.data.repo
 
+import com.dyusov.core.common.utils.MyError
+import com.dyusov.core.common.utils.MyResult
+import com.dyusov.core.data.utils.throwCancellationExceptionAndGeneralError
 import com.dyusov.core.data.utils.toEndOfDayTimestamp
 import com.dyusov.core.data.utils.toEntities
 import com.dyusov.core.data.utils.toStartOfDayTimestamp
@@ -15,30 +18,32 @@ class HabitCompletionRepositoryImpl @Inject constructor(
     private val habitCompletionDao: HabitCompletionDao
 ) : HabitCompletionRepository {
 
-    override fun getCompletionsByHabitId(habitId: Long): Flow<List<HabitCompletion>> {
+    override fun getCompletionsByHabitId(habitId: Long): Flow<MyResult<List<HabitCompletion>, MyError>> {
         return habitCompletionDao.getCompletionsByHabitId(habitId).map {
-            it.toEntities()
+            MyResult.Success(it.toEntities())
         }
     }
 
-    override fun getCompletionsByDate(date: LocalDate): Flow<List<HabitCompletion>> {
+    override fun getCompletionsByDate(date: LocalDate): Flow<MyResult<List<HabitCompletion>, MyError>> {
         return habitCompletionDao.getAllCompletionsByDate(
             date.toStartOfDayTimestamp(),
             date.toEndOfDayTimestamp()
         ).map {
-            it.toEntities()
+            MyResult.Success(it.toEntities())
         }
     }
 
-    override suspend fun getCompletionsForHabitOnDate(
+    override fun getCompletionsForHabitOnDate(
         habitId: Long,
         date: LocalDate
-    ): List<HabitCompletion> {
+    ): Flow<MyResult<List<HabitCompletion>, MyError>> {
         return habitCompletionDao.getHabitCompletionsByDate(
             habitId,
             date.toStartOfDayTimestamp(),
             date.toEndOfDayTimestamp()
-        ).toEntities()
+        ).map {
+            MyResult.Success(it.toEntities())
+        }
     }
 
     override suspend fun addCompletion(habitId: Long, timestamp: Long) {
@@ -70,22 +75,34 @@ class HabitCompletionRepositoryImpl @Inject constructor(
         habitId: Long,
         startTimestamp: Long,
         endTimestamp: Long
-    ): Int {
-        return habitCompletionDao.countHabitCompletionsInPeriod(
-            habitId,
-            startTimestamp,
-            endTimestamp
-        )
+    ): MyResult<Int, MyError> {
+        return try {
+            MyResult.Success(
+                habitCompletionDao.countHabitCompletionsInPeriod(
+                    habitId,
+                    startTimestamp,
+                    endTimestamp
+                )
+            )
+        } catch (_: Exception) {
+            throwCancellationExceptionAndGeneralError()
+        }
     }
 
     override suspend fun isHabitCompletedOnDate(
         habitId: Long,
         date: LocalDate
-    ): Boolean {
-        return habitCompletionDao.isHabitCompletedOnDate(
-            habitId,
-            date.toStartOfDayTimestamp(),
-            date.toEndOfDayTimestamp()
-        )
+    ): MyResult<Boolean, MyError> {
+        return try {
+            MyResult.Success(
+                habitCompletionDao.isHabitCompletedOnDate(
+                    habitId,
+                    date.toStartOfDayTimestamp(),
+                    date.toEndOfDayTimestamp()
+                )
+            )
+        } catch (_: Exception) {
+            throwCancellationExceptionAndGeneralError()
+        }
     }
 }

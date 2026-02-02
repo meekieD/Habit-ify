@@ -24,51 +24,64 @@ interface HabitCompletionDao {
     @Query("DELETE FROM habit_completions WHERE habitId = :habitId")
     suspend fun deleteCompletionsByHabitId(habitId: Long)
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM habit_completions 
         WHERE timestamp >= :startOfDay 
         AND timestamp < :endOfDay 
         ORDER BY timestamp DESC
-    """)
-    fun getAllCompletionsByDate(startOfDay: Long, endOfDay: Long): Flow<List<HabitCompletionDbModel>>
+    """
+    )
+    fun getAllCompletionsByDate(
+        startOfDay: Long,
+        endOfDay: Long
+    ): Flow<List<HabitCompletionDbModel>>
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM habit_completions 
         WHERE habitId = :habitId 
         AND timestamp >= :startOfDay AND timestamp < :endOfDay
-    """)
-    suspend fun getHabitCompletionsByDate(
+    """
+    )
+    fun getHabitCompletionsByDate(
         habitId: Long,
         startOfDay: Long,
         endOfDay: Long
-    ): List<HabitCompletionDbModel>
+    ): Flow<List<HabitCompletionDbModel>>
 
-    @Query("""
+    @Query(
+        """
         DELETE FROM habit_completions 
         WHERE habitId = :habitId 
         AND timestamp >= :startOfDay 
         AND timestamp <= :endOfDay
-    """)
+    """
+    )
     suspend fun deleteHabitCompletionsByDate(habitId: Long, startOfDay: Long, endOfDay: Long)
 
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(*) FROM habit_completions 
         WHERE habitId = :habitId 
         AND timestamp >= :startTimestamp AND timestamp < :endTimestamp
-    """)
+    """
+    )
     suspend fun countHabitCompletionsInPeriod(
         habitId: Long,
         startTimestamp: Long,
         endTimestamp: Long
     ): Int
 
-    @Query("""
+    @Query(
+        """
         SELECT EXISTS(
             SELECT 1 FROM habit_completions 
             WHERE habitId = :habitId 
             AND timestamp >= :startOfDay AND timestamp < :endOfDay
         )
-    """)
+    """
+    )
     suspend fun isHabitCompletedOnDate(
         habitId: Long,
         startOfDay: Long,
