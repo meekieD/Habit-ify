@@ -4,7 +4,7 @@ import com.dyusov.core.common.utils.MyError
 import com.dyusov.core.common.utils.MyResult
 import com.dyusov.core.data.utils.throwCancellationExceptionAndGeneralError
 import com.dyusov.core.data.utils.toEndOfDayTimestamp
-import com.dyusov.core.data.utils.toEntities
+import com.dyusov.core.data.utils.toCompletionEntities
 import com.dyusov.core.data.utils.toStartOfDayTimestamp
 import com.dyusov.core.database.dao.HabitCompletionDao
 import com.dyusov.core.database.entity.HabitCompletionDbModel
@@ -20,7 +20,7 @@ class HabitCompletionRepositoryImpl @Inject constructor(
 
     override fun getCompletionsByHabitId(habitId: Long): Flow<MyResult<List<HabitCompletion>, MyError>> {
         return habitCompletionDao.getCompletionsByHabitId(habitId).map {
-            MyResult.Success(it.toEntities())
+            MyResult.Success(it.toCompletionEntities())
         }
     }
 
@@ -29,7 +29,7 @@ class HabitCompletionRepositoryImpl @Inject constructor(
             date.toStartOfDayTimestamp(),
             date.toEndOfDayTimestamp()
         ).map {
-            MyResult.Success(it.toEntities())
+            MyResult.Success(it.toCompletionEntities())
         }
     }
 
@@ -42,7 +42,7 @@ class HabitCompletionRepositoryImpl @Inject constructor(
             date.toStartOfDayTimestamp(),
             date.toEndOfDayTimestamp()
         ).map {
-            MyResult.Success(it.toEntities())
+            MyResult.Success(it.toCompletionEntities())
         }
     }
 

@@ -78,38 +78,38 @@ fun HabitCompletion.toDbModel(): HabitCompletionDbModel {
 fun HabitWithCompletionsDbModel.toEntity(): HabitWithCompletions {
     return HabitWithCompletions(
         habit = habit.toEntity(),
-        completions = completions.toEntities()
+        completions = completions.toCompletionEntities()
     )
 }
 
 fun HabitWithCompletions.toDbModel(): HabitWithCompletionsDbModel {
     return HabitWithCompletionsDbModel(
         habit = habit.toDbModel(),
-        completions = completions.toDbModels()
+        completions = completions.toCompletionDbModels()
     )
 }
 
-fun List<HabitDbModel>.toEntities(): List<Habit> {
+fun List<HabitDbModel>.toHabitEntities(): List<Habit> {
     return map { it.toEntity() }
 }
 
-fun List<Habit>.toDbModels(): List<HabitDbModel> {
+fun List<Habit>.toHabitDbModels(): List<HabitDbModel> {
     return map { it.toDbModel() }
 }
 
-fun List<HabitCompletionDbModel>.toEntities(): List<HabitCompletion> {
+fun List<HabitCompletionDbModel>.toCompletionEntities(): List<HabitCompletion> {
     return map { it.toEntity() }
 }
 
-fun List<HabitCompletion>.toDbModels(): List<HabitCompletionDbModel> {
+fun List<HabitCompletion>.toCompletionDbModels(): List<HabitCompletionDbModel> {
     return map { it.toDbModel() }
 }
 
-fun List<HabitWithCompletionsDbModel>.toEntities(): List<HabitWithCompletions> {
+fun List<HabitWithCompletionsDbModel>.toHabitWithCompletionsEntities(): List<HabitWithCompletions> {
     return map { it.toEntity() }
 }
 
-fun List<HabitWithCompletions>.toDbModels(): List<HabitWithCompletionsDbModel> {
+fun List<HabitWithCompletions>.toHabitWithCompletionsDbModels(): List<HabitWithCompletionsDbModel> {
     return map { it.toDbModel() }
 }
 

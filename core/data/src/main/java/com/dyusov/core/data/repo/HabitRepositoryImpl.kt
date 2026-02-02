@@ -4,7 +4,8 @@ import com.dyusov.core.common.utils.MyError
 import com.dyusov.core.common.utils.MyResult
 import com.dyusov.core.data.utils.throwCancellationExceptionAndGeneralError
 import com.dyusov.core.data.utils.toDbModel
-import com.dyusov.core.data.utils.toEntities
+import com.dyusov.core.data.utils.toHabitWithCompletionsEntities
+import com.dyusov.core.data.utils.toHabitEntities
 import com.dyusov.core.data.utils.toEntity
 import com.dyusov.core.database.dao.HabitDao
 import com.dyusov.core.model.Habit
@@ -19,13 +20,13 @@ class HabitRepositoryImpl @Inject constructor(
 
     override fun getAllHabits(): Flow<MyResult<List<Habit>, MyError>> {
         return habitDao.getAllHabits().map {
-            MyResult.Success(it.toEntities())
+            MyResult.Success(it.toHabitEntities())
         }
     }
 
     override fun getAllHabitsWithCompletions(): Flow<MyResult<List<HabitWithCompletions>, MyError>> {
         return habitDao.getAllHabitsWithCompletions().map {
-            MyResult.Success(it.toEntities())
+            MyResult.Success(it.toHabitWithCompletionsEntities())
         }
     }
 
