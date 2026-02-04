@@ -20,7 +20,7 @@ interface HabitCompletionRepository {
         date: LocalDate
     ): Flow<MyResult<List<HabitCompletion>, MyError>>
 
-    suspend fun addCompletion(habitId: Long, timestamp: Long = System.currentTimeMillis())
+    suspend fun addCompletion(habitId: Long, timestamp: Long)
 
     suspend fun deleteCompletionById(completionId: Long)
 
