@@ -1,4 +1,4 @@
-package com.dyusov.core.domain
+package com.dyusov.core.domain.tracking
 
 import com.dyusov.core.common.utils.onSuccess
 import com.dyusov.core.data.repo.HabitCompletionRepository

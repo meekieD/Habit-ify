@@ -3,9 +3,9 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(11)
     compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
 }
 
