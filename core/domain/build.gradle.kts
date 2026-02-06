@@ -46,6 +46,8 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
 
+    implementation(libs.kotlinx.datetime)
+
     implementation(libs.hilt.android)
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.dagger.hilt.android.compiler)
