@@ -15,6 +15,17 @@ interface HabitRepository {
 
     fun getAllHabitsWithCompletions(): Flow<MyResult<List<HabitWithCompletions>, MyError>>
 
+    suspend fun getHabitWithCompletionsInPeriod(
+        habitId: Long,
+        startTimestamp: Long,
+        endTimestamp: Long
+    ): MyResult<HabitWithCompletions, MyError>
+
+    fun getAllHabitsWithCompletionsInPeriod(
+        startTimestamp: Long,
+        endTimestamp: Long
+    ): Flow<MyResult<List<HabitWithCompletions>, MyError>>
+
     suspend fun getHabitById(habitId: Long): MyResult<Habit, MyError>
 
     suspend fun getHabitWithCompletions(habitId: Long): MyResult<HabitWithCompletions, MyError>

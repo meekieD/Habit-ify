@@ -4,9 +4,9 @@ import com.dyusov.core.common.utils.MyError
 import com.dyusov.core.common.utils.MyResult
 import com.dyusov.core.data.utils.throwCancellationExceptionAndGeneralError
 import com.dyusov.core.data.utils.toDbModel
-import com.dyusov.core.data.utils.toHabitWithCompletionsEntities
-import com.dyusov.core.data.utils.toHabitEntities
 import com.dyusov.core.data.utils.toEntity
+import com.dyusov.core.data.utils.toHabitEntities
+import com.dyusov.core.data.utils.toHabitWithCompletionsEntities
 import com.dyusov.core.database.dao.HabitDao
 import com.dyusov.core.model.Habit
 import com.dyusov.core.model.HabitWithCompletions
@@ -27,6 +27,41 @@ class HabitRepositoryImpl @Inject constructor(
     override fun getAllHabitsWithCompletions(): Flow<MyResult<List<HabitWithCompletions>, MyError>> {
         return habitDao.getAllHabitsWithCompletions().map {
             MyResult.Success(it.toHabitWithCompletionsEntities())
+        }
+    }
+
+    override suspend fun getHabitWithCompletionsInPeriod(
+        habitId: Long,
+        startTimestamp: Long,
+        endTimestamp: Long
+    ): MyResult<HabitWithCompletions, MyError> {
+        return try {
+            val entity = habitDao.getHabitWithCompletions(habitId).toEntity()
+            val filteredEntity = entity.copy(
+                completions = entity.completions.filter { completion ->
+                    completion.timestamp in startTimestamp..endTimestamp
+                }
+            )
+            MyResult.Success(filteredEntity)
+        } catch (_: Exception) {
+            throwCancellationExceptionAndGeneralError()
+        }
+    }
+
+    override fun getAllHabitsWithCompletionsInPeriod(
+        startTimestamp: Long,
+        endTimestamp: Long
+    ): Flow<MyResult<List<HabitWithCompletions>, MyError>> {
+        return habitDao.getAllHabitsWithCompletions().map { list ->
+            val domainList = list.map { dbModel ->
+                val entity = dbModel.toEntity()
+                entity.copy(
+                    completions = entity.completions.filter { completion ->
+                        completion.timestamp in startTimestamp..endTimestamp
+                    }
+                )
+            }
+            MyResult.Success(domainList)
         }
     }
 
