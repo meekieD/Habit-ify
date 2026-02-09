@@ -33,4 +33,6 @@ interface HabitRepository {
     suspend fun upsertHabit(habit: Habit): MyResult<Long, MyError>
 
     suspend fun deleteHabit(habitId: Long)
+
+    suspend fun toggleCompletedToday(habitId: Long)
 }

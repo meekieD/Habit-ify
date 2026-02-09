@@ -20,6 +20,7 @@ class CreateHabitUseCase @Inject constructor(
         val habit = Habit(
             id = 0L,
             name = name,
+            isCompletedToday = false,
             description = description,
             frequency = frequency,
             color = color,
