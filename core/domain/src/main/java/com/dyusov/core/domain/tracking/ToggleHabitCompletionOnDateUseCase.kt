@@ -3,7 +3,7 @@ package com.dyusov.core.domain.tracking
 import com.dyusov.core.common.utils.onSuccess
 import com.dyusov.core.data.repo.HabitCompletionRepository
 import kotlinx.datetime.LocalDate
-import javax.inject.Inject
+import jakarta.inject.Inject
 import com.dyusov.core.data.utils.toStartOfDayTimestamp
 
 /**

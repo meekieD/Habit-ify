@@ -5,7 +5,7 @@ import com.dyusov.core.common.utils.MyResult
 import com.dyusov.core.data.repo.HabitRepository
 import com.dyusov.core.model.HabitWithCompletions
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class GetAllHabitsWithCompletionsUseCase @Inject constructor(
     private val habitRepository: HabitRepository
