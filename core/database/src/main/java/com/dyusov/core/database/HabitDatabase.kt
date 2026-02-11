@@ -47,7 +47,7 @@ abstract class HabitDatabase : RoomDatabase() {
                 return Room.databaseBuilder(
                     context = context,
                     klass = HabitDatabase::class.java,
-                    name = "notes.db"
+                    name = "habit-ify.db"
                 ).build()
                     .also {
                         instance = it
