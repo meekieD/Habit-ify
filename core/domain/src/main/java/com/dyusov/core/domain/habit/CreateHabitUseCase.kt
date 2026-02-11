@@ -5,7 +5,7 @@ import com.dyusov.core.common.utils.MyResult
 import com.dyusov.core.data.repo.HabitRepository
 import com.dyusov.core.model.Habit
 import com.dyusov.core.model.HabitFrequency
-import jakarta.inject.Inject
+import javax.inject.Inject
 
 class CreateHabitUseCase @Inject constructor(
     private val habitRepository: HabitRepository

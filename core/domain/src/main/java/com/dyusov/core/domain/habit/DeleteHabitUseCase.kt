@@ -1,7 +1,7 @@
 package com.dyusov.core.domain.habit
 
 import com.dyusov.core.data.repo.HabitRepository
-import jakarta.inject.Inject
+import javax.inject.Inject
 
 class DeleteHabitUseCase @Inject constructor(
     private val habitRepository: HabitRepository

@@ -12,7 +12,7 @@ import com.dyusov.core.model.HabitCompletion
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
-import jakarta.inject.Inject
+import javax.inject.Inject
 
 class HabitCompletionRepositoryImpl @Inject constructor(
     private val habitCompletionDao: HabitCompletionDao

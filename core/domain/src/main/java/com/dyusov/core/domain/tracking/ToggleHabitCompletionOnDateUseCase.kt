@@ -5,7 +5,7 @@ import com.dyusov.core.common.utils.MyResult
 import com.dyusov.core.data.repo.HabitCompletionRepository
 import com.dyusov.core.data.repo.HabitRepository
 import com.dyusov.core.data.utils.toStartOfDayTimestamp
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.datetime.LocalDate
 
 /**

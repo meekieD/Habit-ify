@@ -12,7 +12,7 @@ import com.dyusov.core.model.Habit
 import com.dyusov.core.model.HabitWithCompletions
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import jakarta.inject.Inject
+import javax.inject.Inject
 
 class HabitRepositoryImpl @Inject constructor(
     private val habitDao: HabitDao

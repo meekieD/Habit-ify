@@ -47,6 +47,8 @@ dependencies {
     implementation(project(":core:model"))
 
     implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    ksp(libs.androidx.hilt.compiler)
     ksp(libs.dagger.hilt.android.compiler)
 
     implementation(libs.androidx.lifecycle.runtime.ktx)

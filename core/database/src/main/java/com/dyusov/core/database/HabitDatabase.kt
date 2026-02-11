@@ -1,6 +1,8 @@
 package com.dyusov.core.database
 
+import android.content.Context
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.dyusov.core.database.dao.HabitCompletionDao
@@ -28,4 +30,29 @@ abstract class HabitDatabase : RoomDatabase() {
     abstract fun habitDao(): HabitDao
 
     abstract fun habitCompletionDao(): HabitCompletionDao
+
+    companion object {
+        private val LOCK = Any()
+        private var instance: HabitDatabase? = null
+
+        fun getInstance(context: Context): HabitDatabase {
+            instance?.let {
+                return it
+            }
+
+            synchronized(LOCK) {
+                instance?.let {
+                    return it
+                }
+                return Room.databaseBuilder(
+                    context = context,
+                    klass = HabitDatabase::class.java,
+                    name = "notes.db"
+                ).build()
+                    .also {
+                        instance = it
+                    }
+            }
+        }
+    }
 }
