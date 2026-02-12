@@ -1,5 +1,6 @@
 package com.dyusov.core.domain.tracking
 
+import com.dyusov.core.common.datetime.DateTimeProvider
 import com.dyusov.core.common.datetime.SystemDateTimeProvider
 import com.dyusov.core.common.utils.MyResult
 import com.dyusov.core.data.repo.HabitCompletionRepository
@@ -15,7 +16,8 @@ import kotlinx.datetime.LocalDate
  */
 class ToggleHabitCompletionOnDateUseCase @Inject constructor(
     private val habitRepository: HabitRepository,
-    private val habitCompletionRepository: HabitCompletionRepository
+    private val habitCompletionRepository: HabitCompletionRepository,
+    private val dateTimeProvider: DateTimeProvider
 ) {
     suspend operator fun invoke(habitId: Long, date: LocalDate) {
         val isCompleted = when (
@@ -34,7 +36,7 @@ class ToggleHabitCompletionOnDateUseCase @Inject constructor(
             habitCompletionRepository.addCompletion(habitId, date.toStartOfDayTimestamp())
         }
 
-        if (date == SystemDateTimeProvider().nowLocalDate()) {
+        if (date == dateTimeProvider.nowLocalDate()) {
             habitRepository.toggleCompletedToday(habitId)
         }
     }

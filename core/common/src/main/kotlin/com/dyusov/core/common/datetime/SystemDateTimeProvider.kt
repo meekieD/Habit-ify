@@ -4,10 +4,11 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import javax.inject.Inject
 import kotlin.time.Clock
 import kotlin.time.Instant
 
-class SystemDateTimeProvider : DateTimeProvider {
+class SystemDateTimeProvider @Inject constructor() : DateTimeProvider {
     override fun now(): Instant = Clock.System.now()
 
     override fun nowLocalDate(timeZone: TimeZone): LocalDate {
