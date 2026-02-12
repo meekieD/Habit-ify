@@ -3,11 +3,13 @@ package com.dyusov.feature.habit.agenda.impl
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dyusov.core.common.datetime.DateTimeProvider
 import com.dyusov.core.common.datetime.nowClock
 import com.dyusov.core.common.utils.onError
 import com.dyusov.core.common.utils.onSuccess
 import com.dyusov.core.domain.habit.GetAllHabitsUseCase
 import com.dyusov.core.domain.habit.UpdateHabitUseCase
+import com.dyusov.core.domain.tracking.ToggleHabitCompletionOnDateUseCase
 import com.dyusov.core.model.Habit
 import com.dyusov.core.model.HabitFrequency
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,12 +26,17 @@ import javax.inject.Inject
 @HiltViewModel
 class HabitAgendaViewModel @Inject constructor(
     private val getAllHabitsUseCase: GetAllHabitsUseCase,
+    private val toggleHabitCompletionOnDateUseCase: ToggleHabitCompletionOnDateUseCase,
+    private val dateTimeProvider: DateTimeProvider,
     // TODO: for test
     private val updateHabitUseCase: UpdateHabitUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HabitAgendaState())
+    private val _isRefreshing = MutableStateFlow(false)
+
     val state: StateFlow<HabitAgendaState> = _state.asStateFlow()
+    val refreshState = _isRefreshing.asStateFlow()
 
     init {
         createTestHabits()
@@ -59,6 +66,27 @@ class HabitAgendaViewModel @Inject constructor(
                         }
                     }
             }.launchIn(viewModelScope)
+    }
+
+    fun processCommand(command: HabitAgendaCommand) {
+        viewModelScope.launch {
+            when (command) {
+                HabitAgendaCommand.RefreshData -> {
+                    _isRefreshing.update { true }
+                    viewModelScope.launch {
+                        loadHabits() // TODO: check performance
+                        _isRefreshing.update { false }
+                    }
+                }
+
+                is HabitAgendaCommand.ToggleHabitCompletion -> {
+                    toggleHabitCompletionOnDateUseCase(
+                        habitId = command.habitId,
+                        date = dateTimeProvider.nowLocalDate()
+                    )
+                }
+            }
+        }
     }
 
     // TODO: for test
@@ -109,7 +137,7 @@ class HabitAgendaViewModel @Inject constructor(
 // commands
 sealed interface HabitAgendaCommand {
     data object RefreshData : HabitAgendaCommand
-    data class ToggleHabitCompletion(val habitId: String) : HabitAgendaCommand
+    data class ToggleHabitCompletion(val habitId: Long) : HabitAgendaCommand
 }
 
 // screen state
