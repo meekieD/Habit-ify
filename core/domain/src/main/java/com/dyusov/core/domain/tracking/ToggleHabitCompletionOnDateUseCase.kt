@@ -1,13 +1,12 @@
 package com.dyusov.core.domain.tracking
 
 import com.dyusov.core.common.datetime.DateTimeProvider
-import com.dyusov.core.common.datetime.SystemDateTimeProvider
 import com.dyusov.core.common.utils.MyResult
 import com.dyusov.core.data.repo.HabitCompletionRepository
 import com.dyusov.core.data.repo.HabitRepository
 import com.dyusov.core.data.utils.toStartOfDayTimestamp
-import javax.inject.Inject
 import kotlinx.datetime.LocalDate
+import javax.inject.Inject
 
 /**
  * Toggle the completion state for a given habit on a specific date.
