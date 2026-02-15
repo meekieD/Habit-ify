@@ -9,7 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.filter
@@ -47,10 +49,13 @@ fun SwipeLaunchedEffect(
     state: AnchoredDraggableState<SwipeState>,
     onSwipe: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
+
     LaunchedEffect(state) {
         snapshotFlow { state.settledValue }
             .filter { it != SwipeState.CENTER }
             .collect {
+                haptic.performHapticFeedback(HapticFeedbackType.Confirm)
                 onSwipe()
                 state.animateTo(SwipeState.CENTER)
             }
