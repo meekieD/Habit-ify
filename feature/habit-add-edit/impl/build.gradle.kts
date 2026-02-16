@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -40,6 +42,23 @@ android {
 
 dependencies {
     implementation(project(":feature:habit-add-edit:api"))
+    implementation(project(":core:common"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:model"))
+
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    ksp(libs.androidx.hilt.compiler)
+    ksp(libs.dagger.hilt.android.compiler)
+
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+
+    implementation(libs.androidx.compose.material.icons.extended)
+
+    implementation(libs.kotlinx.coroutines.android)
+
+    implementation(libs.kotlinx.datetime)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.navigation3.runtime)
