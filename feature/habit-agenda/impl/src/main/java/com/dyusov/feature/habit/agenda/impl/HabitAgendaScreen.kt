@@ -37,6 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,6 +52,7 @@ import com.dyusov.core.ui.habit.HabitCardDefaults
 import com.dyusov.core.ui.utils.SwipeActionState
 import com.dyusov.core.ui.utils.SwipeLaunchedEffect
 import com.dyusov.core.ui.utils.SwipeState
+import com.dyusov.core.ui.utils.getActionText
 import com.dyusov.core.ui.utils.rememberDisplayedCompletionState
 import com.dyusov.core.ui.utils.rememberSwipeAnchoredDraggableState
 import com.dyusov.core.ui.utils.rememberSwipeFlingBehavior
@@ -72,7 +75,7 @@ fun HabitAgendaScreen(
                 modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp),
                 title = {
                     Text(
-                        text = "Your habits",
+                        text = stringResource(R.string.your_habits),
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 32.sp,
                         textAlign = TextAlign.Center,
@@ -91,7 +94,7 @@ fun HabitAgendaScreen(
             item {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Swipe to mark done or reset",
+                    text = stringResource(R.string.swipe_to_mark_done_or_reset),
                     color = MaterialTheme.colorScheme.secondary,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
@@ -216,7 +219,7 @@ private fun ActionIcon(actionState: SwipeActionState) {
     Icon(
         modifier = Modifier.size(HabitCardDefaults.iconSize),
         imageVector = actionState.actionIcon,
-        contentDescription = actionState.actionText,
+        contentDescription = actionState.getActionText(LocalContext.current),
         tint = actionState.actionColor
     )
 }
@@ -224,7 +227,7 @@ private fun ActionIcon(actionState: SwipeActionState) {
 @Composable
 private fun ActionText(actionState: SwipeActionState) {
     Text(
-        text = actionState.actionText,
+        text = actionState.getActionText(LocalContext.current),
         color = actionState.actionColor,
         fontSize = 12.sp,
         fontWeight = FontWeight.Bold

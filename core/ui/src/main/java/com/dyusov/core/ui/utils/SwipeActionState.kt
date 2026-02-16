@@ -1,10 +1,12 @@
 package com.dyusov.core.ui.utils
 
+import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.dyusov.core.ui.R
 import com.dyusov.core.ui.habit.HabitCardDefaults
 
 data class SwipeActionState(
@@ -30,11 +32,12 @@ data class SwipeActionState(
         } else {
             Icons.Default.Check
         }
+}
 
-    val actionText: String
-        get() = if (isCompleted) {
-            "Undo"
-        } else {
-            "Done"
-        }
+fun SwipeActionState.getActionText(context: Context): String {
+    return if (isCompleted) {
+        context.getString(R.string.undo_action)
+    } else {
+        context.getString(R.string.done_action)
+    }
 }
