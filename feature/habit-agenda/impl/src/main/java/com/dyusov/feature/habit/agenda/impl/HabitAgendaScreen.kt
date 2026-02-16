@@ -3,6 +3,7 @@
 package com.dyusov.feature.habit.agenda.impl
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Arrangement
@@ -96,7 +97,8 @@ fun HabitAgendaScreen(
                         viewModel.processCommand(
                             HabitAgendaCommand.ToggleHabitCompletion(habit.id)
                         )
-                    }
+                    },
+                    onHabitClick = onFirstScreenButtonClick
                 )
             }
         }
@@ -107,7 +109,8 @@ fun HabitAgendaScreen(
 private fun HabitCard(
     modifier: Modifier = Modifier,
     habit: Habit,
-    onHabitSwipe: () -> Unit
+    onHabitSwipe: () -> Unit,
+    onHabitClick: () -> Unit
 ) {
     val swipeState = rememberSwipeAnchoredDraggableState()
 
@@ -117,6 +120,7 @@ private fun HabitCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
+            .clickable(onClick = onHabitClick)
             .offset {
                 IntOffset(
                     x = swipeState.requireOffset().roundToInt(),
