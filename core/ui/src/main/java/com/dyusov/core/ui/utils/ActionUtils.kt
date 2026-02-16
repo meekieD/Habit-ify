@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -15,12 +16,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.filter
-
-enum class SwipeState {
-    LEFT,
-    CENTER,
-    RIGHT
-}
 
 @Composable
 fun rememberSwipeAnchoredDraggableState(
@@ -68,6 +63,30 @@ fun rememberSwipeFlingBehavior(
     positionalThreshold: Float = 0.5f,
 ) = AnchoredDraggableDefaults.flingBehavior(
     state = state,
-    positionalThreshold = { distance -> distance * positionalThreshold },
+    positionalThreshold = { distance ->
+        distance * positionalThreshold
+    },
     animationSpec = tween(durationMillis = 300),
 )
+
+@Composable
+fun rememberDisplayedCompletionState(
+    isHabitCompleted: Boolean,
+    swipeState: AnchoredDraggableState<SwipeState>,
+    key: Any
+): Boolean {
+    val displayedState = remember(key) {
+        mutableStateOf(isHabitCompleted)
+    }
+
+    LaunchedEffect(key, isHabitCompleted, swipeState) {
+        snapshotFlow { swipeState.offset }
+            .collect { offset ->
+                if (offset == 0f) {
+                    displayedState.value = isHabitCompleted
+                }
+            }
+    }
+
+    return displayedState.value
+}
