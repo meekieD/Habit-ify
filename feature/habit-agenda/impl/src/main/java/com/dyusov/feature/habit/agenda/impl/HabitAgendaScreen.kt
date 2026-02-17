@@ -5,16 +5,12 @@ package com.dyusov.feature.habit.agenda.impl
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.AnchoredDraggableState
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,22 +23,29 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -50,14 +53,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.dyusov.core.model.Habit
 import com.dyusov.core.ui.habit.HabitCardDefaults
 import com.dyusov.core.ui.utils.SwipeActionState
-import com.dyusov.core.ui.utils.SwipeLaunchedEffect
-import com.dyusov.core.ui.utils.SwipeState
 import com.dyusov.core.ui.utils.getActionText
-import com.dyusov.core.ui.utils.rememberDisplayedCompletionState
-import com.dyusov.core.ui.utils.rememberSwipeAnchoredDraggableState
-import com.dyusov.core.ui.utils.rememberSwipeFlingBehavior
 import com.dyusov.core.ui.utils.toPastel
-import kotlin.math.roundToInt
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 
 @Composable
 fun HabitAgendaScreen(
@@ -107,11 +106,11 @@ fun HabitAgendaScreen(
                 items = state.items,
                 key = { it.id }
             ) { habit ->
-                HabitCard(
+                SwipeableHabitItem(
                     habit = habit,
                     onHabitSwipe = {
                         viewModel.processCommand(
-                            HabitAgendaCommand.ToggleHabitCompletion(habit.id)
+                            command = HabitAgendaCommand.ToggleHabitCompletion(habit.id)
                         )
                     },
                     onHabitClick = onFirstScreenButtonClick
@@ -122,45 +121,68 @@ fun HabitAgendaScreen(
 }
 
 @Composable
-private fun HabitCard(
-    modifier: Modifier = Modifier,
+fun SwipeableHabitItem(
     habit: Habit,
     onHabitSwipe: () -> Unit,
     onHabitClick: () -> Unit
 ) {
-    val swipeState = rememberSwipeAnchoredDraggableState()
-
-    val displayedAsCompleted = rememberDisplayedCompletionState(
-        isHabitCompleted = habit.isCompletedToday,
-        swipeState = swipeState,
-        key = habit.id
+    val coroutineScope = rememberCoroutineScope()
+    val dismissState = rememberSwipeToDismissBoxState(
+        positionalThreshold = with(LocalDensity.current) {
+            {
+                16.dp.toPx()
+            }
+        }
     )
+    val swipeActionState = remember(habit.isCompletedToday) {
+        SwipeActionState(isCompleted = habit.isCompletedToday)
+    }
+    val haptic = LocalHapticFeedback.current
 
-    SwipeLaunchedEffect(state = swipeState, onSwipe = onHabitSwipe)
-
-    val swipeActionState = remember(displayedAsCompleted) {
-        SwipeActionState(isCompleted = displayedAsCompleted)
+    LaunchedEffect(dismissState) {
+        snapshotFlow { dismissState.currentValue }
+            .filter { it != SwipeToDismissBoxValue.Settled }
+            .collect {
+                haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                onHabitSwipe()
+                dismissState.reset()
+            }
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = HabitCardDefaults.cardHorizontalMargin)
-            .clip(RoundedCornerShape(HabitCardDefaults.cornerRadius))
-    ) {
-        SwipeBackgroundLayer(actionState = swipeActionState)
+    SwipeToDismissBox(
+        state = dismissState,
+        onDismiss = { dismissValue ->
+            when (dismissValue) {
+                SwipeToDismissBoxValue.StartToEnd,
+                SwipeToDismissBoxValue.EndToStart -> {
+                    coroutineScope.launch {
+                        dismissState.reset()
+                        onHabitSwipe()
+                    }
+                }
 
-        HabitCardContent(
-            habit = habit,
-            swipeState = swipeState,
-            onHabitClick = onHabitClick
-        )
-    }
+                SwipeToDismissBoxValue.Settled -> Unit
+            }
+        },
+        backgroundContent = {
+            SwipeBackgroundLayer(
+                actionState = swipeActionState,
+                dismissDirection = dismissState.dismissDirection
+            )
+        },
+        content = {
+            HabitCardContent(
+                habit = habit,
+                onHabitClick = onHabitClick
+            )
+        }
+    )
 }
 
 @Composable
 private fun SwipeBackgroundLayer(
     actionState: SwipeActionState,
+    dismissDirection: SwipeToDismissBoxValue,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -175,19 +197,24 @@ private fun SwipeBackgroundLayer(
                 vertical = HabitCardDefaults.verticalPadding
             )
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SwipeActionContent(
-                actionState = actionState,
-                iconFirst = false
-            )
-            SwipeActionContent(
-                actionState = actionState,
-                iconFirst = true
-            )
+        when (dismissDirection) {
+            SwipeToDismissBoxValue.StartToEnd -> {
+                SwipeActionContent(
+                    modifier = Modifier.align(Alignment.CenterStart),
+                    actionState = actionState,
+                    iconFirst = false
+                )
+            }
+
+            SwipeToDismissBoxValue.EndToStart -> {
+                SwipeActionContent(
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    actionState = actionState,
+                    iconFirst = true
+                )
+            }
+
+            SwipeToDismissBoxValue.Settled -> Unit
         }
     }
 }
@@ -236,26 +263,14 @@ private fun ActionText(actionState: SwipeActionState) {
 
 @Composable
 private fun HabitCardContent(
+    modifier: Modifier = Modifier,
     habit: Habit,
-    swipeState: AnchoredDraggableState<SwipeState>,
-    onHabitClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onHabitClick: () -> Unit
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onHabitClick)
-            .offset {
-                IntOffset(
-                    x = swipeState.requireOffset().roundToInt(),
-                    y = 0
-                )
-            }
-            .anchoredDraggable(
-                state = swipeState,
-                orientation = Orientation.Horizontal,
-                flingBehavior = rememberSwipeFlingBehavior(state = swipeState),
-            ),
+            .clickable(onClick = onHabitClick),
         shape = RoundedCornerShape(HabitCardDefaults.cornerRadius),
         colors = CardDefaults.cardColors(
             containerColor = Color(habit.color.toPastel())
