@@ -55,6 +55,7 @@ import com.dyusov.core.ui.habit.HabitCardDefaults
 import com.dyusov.core.ui.utils.SwipeActionState
 import com.dyusov.core.ui.utils.getActionText
 import com.dyusov.core.ui.utils.toPastel
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
@@ -130,38 +131,30 @@ fun SwipeableHabitItem(
     val dismissState = rememberSwipeToDismissBoxState(
         positionalThreshold = with(LocalDensity.current) {
             {
-                16.dp.toPx()
+                32.dp.toPx()
             }
         }
     )
     val swipeActionState = remember(habit.isCompletedToday) {
         SwipeActionState(isCompleted = habit.isCompletedToday)
     }
-    val haptic = LocalHapticFeedback.current
 
+    // add haptic feedback on swipe
+    val haptic = LocalHapticFeedback.current
     LaunchedEffect(dismissState) {
         snapshotFlow { dismissState.currentValue }
             .filter { it != SwipeToDismissBoxValue.Settled }
             .collect {
                 haptic.performHapticFeedback(HapticFeedbackType.Confirm)
-                onHabitSwipe()
-                dismissState.reset()
             }
     }
 
     SwipeToDismissBox(
         state = dismissState,
-        onDismiss = { dismissValue ->
-            when (dismissValue) {
-                SwipeToDismissBoxValue.StartToEnd,
-                SwipeToDismissBoxValue.EndToStart -> {
-                    coroutineScope.launch {
-                        dismissState.reset()
-                        onHabitSwipe()
-                    }
-                }
-
-                SwipeToDismissBoxValue.Settled -> Unit
+        onDismiss = {
+            coroutineScope.launch {
+                dismissState.reset()
+                onHabitSwipe()
             }
         },
         backgroundContent = {
