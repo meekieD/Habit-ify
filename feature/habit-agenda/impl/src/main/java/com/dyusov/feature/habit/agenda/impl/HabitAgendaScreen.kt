@@ -218,39 +218,29 @@ private fun SwipeActionContent(
     iconFirst: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (iconFirst) {
-            ActionIcon(actionState)
-            Spacer(modifier = Modifier.width(HabitCardDefaults.iconSpacing))
-            ActionText(actionState)
-        } else {
-            ActionText(actionState)
-            Spacer(modifier = Modifier.width(HabitCardDefaults.iconSpacing))
-            ActionIcon(actionState)
-        }
+    if (iconFirst) {
+        ActionIcon(
+            modifier = modifier,
+            actionState = actionState
+        )
+    } else {
+        ActionIcon(
+            modifier = modifier,
+            actionState = actionState
+        )
     }
 }
 
 @Composable
-private fun ActionIcon(actionState: SwipeActionState) {
+private fun ActionIcon(
+    modifier: Modifier = Modifier,
+    actionState: SwipeActionState
+) {
     Icon(
-        modifier = Modifier.size(HabitCardDefaults.iconSize),
+        modifier = modifier.size(HabitCardDefaults.iconSize),
         imageVector = actionState.actionIcon,
         contentDescription = actionState.getActionText(LocalContext.current),
         tint = actionState.actionColor
-    )
-}
-
-@Composable
-private fun ActionText(actionState: SwipeActionState) {
-    Text(
-        text = actionState.getActionText(LocalContext.current),
-        color = actionState.actionColor,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Bold
     )
 }
 
