@@ -1,4 +1,4 @@
-package com.dyusov.core.database.entity
+package com.dyusov.core.model
 
 /**
  * Frequency type for habits.

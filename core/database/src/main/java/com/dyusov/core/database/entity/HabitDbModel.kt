@@ -2,8 +2,8 @@ package com.dyusov.core.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.dyusov.core.model.PeriodType
-import java.time.DayOfWeek
+import com.dyusov.core.model.FrequencyType
+import kotlinx.datetime.DayOfWeek
 
 /**
  * Database entity representing a habit.
@@ -11,7 +11,7 @@ import java.time.DayOfWeek
  * Frequency is stored using [frequencyType] to determine which fields apply:
  * - DAILY: No extra fields needed
  * - WEEKLY: Uses [weeklyDays]
- * - CUSTOM: Uses [periodType] + [timesPerPeriod]
+ * - CUSTOM: Uses [monthlyDays]
  */
 @Entity(tableName = "habits")
 data class HabitDbModel(
@@ -22,8 +22,7 @@ data class HabitDbModel(
     val isCompletedToday: Boolean,
     val frequencyType: FrequencyType,
     val weeklyDays: Set<DayOfWeek>?,
-    val periodType: PeriodType?,
-    val timesPerPeriod: Int?,
+    val monthlyDays: Set<Int>?,
     val createdAt: Long,
     val updatedAt: Long,
     val color: String?

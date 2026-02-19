@@ -1,9 +1,8 @@
 package com.dyusov.core.database.utils
 
 import androidx.room.TypeConverter
-import com.dyusov.core.database.entity.FrequencyType
-import com.dyusov.core.model.PeriodType
-import java.time.DayOfWeek
+import com.dyusov.core.model.FrequencyType
+import kotlinx.datetime.DayOfWeek
 
 /**
  * Type converters for Room database to handle custom types in habit-related entities.
@@ -18,20 +17,6 @@ class HabitConverters {
     fun toFrequencyType(value: String): FrequencyType = enumValueOf(value)
 
     @TypeConverter
-    fun fromPeriodType(value: PeriodType?): String? = value?.name
-
-    @TypeConverter
-    fun toPeriodType(value: String?): PeriodType? {
-        return value?.let {
-            try {
-                enumValueOf<PeriodType>(it)
-            } catch (e: IllegalArgumentException) {
-                null
-            }
-        }
-    }
-
-    @TypeConverter
     fun fromDayOfWeekSet(days: Set<DayOfWeek>?): String? {
         return days?.joinToString(",") { it.name }
     }
@@ -39,12 +24,24 @@ class HabitConverters {
     @TypeConverter
     fun toDayOfWeekSet(value: String?): Set<DayOfWeek>? {
         return value
-            ?.takeIf {
-                it.isNotEmpty()
-            }
+            ?.takeIf { it.isNotEmpty() }
+            ?.split(",")
+            ?.map { enumValueOf<DayOfWeek>(it) }
+            ?.toSet()
+    }
+
+    @TypeConverter
+    fun fromIntSet(days: Set<Int>?): String? {
+        return days?.joinToString(",")
+    }
+
+    @TypeConverter
+    fun toIntSet(value: String?): Set<Int>? {
+        return value
+            ?.takeIf { it.isNotEmpty() }
             ?.split(",")
             ?.map {
-                enumValueOf<DayOfWeek>(it)
+                it.toInt()
             }
             ?.toSet()
     }

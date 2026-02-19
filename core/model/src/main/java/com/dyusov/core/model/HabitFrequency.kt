@@ -1,6 +1,6 @@
 package com.dyusov.core.model
 
-import java.time.DayOfWeek
+import kotlinx.datetime.DayOfWeek
 
 /**
  * Frequency pattern for habit execution.
@@ -20,22 +20,13 @@ sealed class HabitFrequency {
     ) : HabitFrequency()
 
     /**
-     * Flexible goal: N times per period.
+     * Specific days of month.
      *
-     * Example: 3 times per week, 5 times per month
+     * Example: 11th and 22nd of every month
      *
-     * @property period Time period (week or month)
-     * @property timesPerPeriod How many times to complete (must be positive)
+     * @property daysOfMonth Set of day numbers (1..31)
      */
     data class Custom(
-        val period: PeriodType,
-        val timesPerPeriod: Int
+        val daysOfMonth: Set<Int>
     ) : HabitFrequency()
-}
-
-/**
- * Time period type for custom frequency.
- */
-enum class PeriodType {
-    WEEK, MONTH
 }

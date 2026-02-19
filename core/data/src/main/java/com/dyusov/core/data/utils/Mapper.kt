@@ -1,20 +1,19 @@
 package com.dyusov.core.data.utils
 
-import com.dyusov.core.database.entity.FrequencyType
 import com.dyusov.core.database.entity.HabitCompletionDbModel
 import com.dyusov.core.database.entity.HabitDbModel
 import com.dyusov.core.database.entity.HabitWithCompletionsDbModel
+import com.dyusov.core.model.FrequencyType
 import com.dyusov.core.model.Habit
 import com.dyusov.core.model.HabitCompletion
 import com.dyusov.core.model.HabitFrequency
 import com.dyusov.core.model.HabitWithCompletions
-import com.dyusov.core.model.PeriodType
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
-import java.time.DayOfWeek
+import kotlinx.datetime.DayOfWeek
 
 object HabitColors {
     const val DEFAULT = 0xFFFFFFFF.toInt() // if no color, use white
@@ -25,7 +24,7 @@ fun HabitDbModel.toEntity(): Habit {
         id = id,
         name = name,
         description = description,
-        frequency = frequencyType.toHabitFrequency(weeklyDays, periodType, timesPerPeriod),
+        frequency = frequencyType.toHabitFrequency(weeklyDays, monthlyDays),
         color = color?.let {
             try {
                 it.hexToInt()
@@ -47,8 +46,7 @@ fun Habit.toDbModel(): HabitDbModel {
         isCompletedToday = isCompletedToday,
         frequencyType = frequency.toFrequencyType(),
         weeklyDays = frequency.getWeeklyDays(),
-        periodType = frequency.getPeriodType(),
-        timesPerPeriod = frequency.getTimesPerPeriod(),
+        monthlyDays = frequency.getMonthlyDays(),
         createdAt = createdAt,
         updatedAt = updatedAt,
         color = color.let {
@@ -117,8 +115,7 @@ fun List<HabitWithCompletions>.toHabitWithCompletionsDbModels(): List<HabitWithC
 
 private fun FrequencyType.toHabitFrequency(
     weeklyDays: Set<DayOfWeek>?,
-    periodType: PeriodType?,
-    timesPerPeriod: Int?
+    monthlyDays: Set<Int>?
 ): HabitFrequency {
     return when (this) {
         FrequencyType.DAILY -> HabitFrequency.Daily
@@ -128,8 +125,7 @@ private fun FrequencyType.toHabitFrequency(
         )
 
         FrequencyType.CUSTOM -> HabitFrequency.Custom(
-            period = periodType ?: PeriodType.WEEK,
-            timesPerPeriod = timesPerPeriod ?: 1
+            daysOfMonth = monthlyDays ?: emptySet()
         )
     }
 }
@@ -149,16 +145,9 @@ private fun HabitFrequency.getWeeklyDays(): Set<DayOfWeek>? {
     }
 }
 
-private fun HabitFrequency.getPeriodType(): PeriodType? {
+private fun HabitFrequency.getMonthlyDays(): Set<Int>? {
     return when (this) {
-        is HabitFrequency.Custom -> this.period
-        else -> null
-    }
-}
-
-private fun HabitFrequency.getTimesPerPeriod(): Int? {
-    return when (this) {
-        is HabitFrequency.Custom -> this.timesPerPeriod
+        is HabitFrequency.Custom -> this.daysOfMonth
         else -> null
     }
 }

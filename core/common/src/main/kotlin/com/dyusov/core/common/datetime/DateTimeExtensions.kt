@@ -10,12 +10,10 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 
-// Получение текущей даты
 fun LocalDate.Companion.nowClock(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDate {
     return Clock.System.now().toLocalDateTime(timeZone).date
 }
 
-// Проверки относительно текущей даты
 fun LocalDate.isToday(timeZone: TimeZone = TimeZone.currentSystemDefault()): Boolean {
     return this == LocalDate.nowClock(timeZone)
 }
