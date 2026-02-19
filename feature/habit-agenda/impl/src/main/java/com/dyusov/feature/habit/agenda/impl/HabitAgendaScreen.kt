@@ -189,42 +189,21 @@ private fun SwipeBackgroundLayer(
     ) {
         when (dismissDirection) {
             SwipeToDismissBoxValue.StartToEnd -> {
-                SwipeActionContent(
+                ActionIcon(
                     modifier = Modifier.align(Alignment.CenterStart),
-                    actionState = actionState,
-                    iconFirst = false
+                    actionState = actionState
                 )
             }
 
             SwipeToDismissBoxValue.EndToStart -> {
-                SwipeActionContent(
+                ActionIcon(
                     modifier = Modifier.align(Alignment.CenterEnd),
-                    actionState = actionState,
-                    iconFirst = true
+                    actionState = actionState
                 )
             }
 
             SwipeToDismissBoxValue.Settled -> Unit
         }
-    }
-}
-
-@Composable
-private fun SwipeActionContent(
-    actionState: SwipeActionState,
-    iconFirst: Boolean,
-    modifier: Modifier = Modifier
-) {
-    if (iconFirst) {
-        ActionIcon(
-            modifier = modifier,
-            actionState = actionState
-        )
-    } else {
-        ActionIcon(
-            modifier = modifier,
-            actionState = actionState
-        )
     }
 }
 
@@ -261,25 +240,19 @@ private fun HabitCardContent(
             null
         },
     ) {
-        Row(
+        Text(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
                     vertical = HabitCardDefaults.verticalPadding,
                     horizontal = HabitCardDefaults.horizontalPadding
                 ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = habit.name,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.ExtraBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+            text = habit.name,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.ExtraBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
