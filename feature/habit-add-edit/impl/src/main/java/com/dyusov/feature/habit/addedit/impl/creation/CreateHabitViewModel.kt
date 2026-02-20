@@ -30,17 +30,67 @@ class CreateHabitViewModel @Inject constructor(
     fun processCommand(command: CreateHabitCommand) {
         viewModelScope.launch {
             when (command) {
-                is CreateHabitCommand.InputName -> TODO()
+                is CreateHabitCommand.InputName -> {
+                    _state.update { currentState ->
+                        if (currentState is CreateHabitState.Creation) {
+                            currentState.copy(name = command.name)
+                        } else {
+                            currentState
+                        }
+                    }
+                }
 
-                is CreateHabitCommand.InputDescription -> TODO()
+                is CreateHabitCommand.InputDescription -> {
+                    _state.update { currentState ->
+                        if (currentState is CreateHabitState.Creation) {
+                            currentState.copy(description = command.description)
+                        } else {
+                            currentState
+                        }
+                    }
+                }
 
-                is CreateHabitCommand.SelectFrequencyType -> TODO()
+                is CreateHabitCommand.SelectFrequencyType -> {
+                    _state.update { currentState ->
+                        if (currentState is CreateHabitState.Creation) {
+                            currentState.copy(frequencyType = command.type)
+                        } else {
+                            currentState
+                        }
+                    }
+                }
 
-                is CreateHabitCommand.ToggleDayOfWeek -> TODO()
+                is CreateHabitCommand.ToggleDayOfWeek -> {
+                    _state.update { currentState ->
+                        if (currentState is CreateHabitState.Creation) {
+                            val currentDays = currentState.selectedDaysOfTheWeek
+                            currentState.copy(selectedDaysOfTheWeek = currentDays + command.day)
+                        } else {
+                            currentState
+                        }
+                    }
+                }
 
-                is CreateHabitCommand.ToggleDayOfMonth -> TODO()
+                is CreateHabitCommand.ToggleDayOfMonth -> {
+                    _state.update { currentState ->
+                        if (currentState is CreateHabitState.Creation) {
+                            val currentDays = currentState.selectedDaysOfMonth
+                            currentState.copy(selectedDaysOfMonth = currentDays + command.day)
+                        } else {
+                            currentState
+                        }
+                    }
+                }
 
-                is CreateHabitCommand.SelectColor -> TODO()
+                is CreateHabitCommand.SelectColor -> {
+                    _state.update { currentState ->
+                        if (currentState is CreateHabitState.Creation) {
+                            currentState.copy(color = command.color)
+                        } else {
+                            currentState
+                        }
+                    }
+                }
 
                 CreateHabitCommand.Save -> {
                     _state.update { currentState ->
@@ -58,7 +108,9 @@ class CreateHabitViewModel @Inject constructor(
                     }
                 }
 
-                CreateHabitCommand.Back -> TODO()
+                CreateHabitCommand.Back -> {
+                    _state.update { CreateHabitState.Finished }
+                }
             }
         }
     }
@@ -89,7 +141,7 @@ sealed interface CreateHabitState {
         val name: String = "",
         val description: String? = null,
         val frequencyType: FrequencyType = FrequencyType.DAILY,
-        val selectedDays: Set<DayOfWeek> = setOf(LocalDate.nowClock().dayOfWeek),
+        val selectedDaysOfTheWeek: Set<DayOfWeek> = setOf(LocalDate.nowClock().dayOfWeek),
         val selectedDaysOfMonth: Set<Int> = setOf(LocalDate.nowClock().day),
         val color: Int = HabitCardDefaults.DEFAULT_COLOR,
         val error: String? = null
@@ -98,14 +150,14 @@ sealed interface CreateHabitState {
         val frequency: HabitFrequency
             get() = when (frequencyType) {
                 FrequencyType.DAILY -> HabitFrequency.Daily
-                FrequencyType.WEEKLY -> HabitFrequency.Weekly(selectedDays)
+                FrequencyType.WEEKLY -> HabitFrequency.Weekly(selectedDaysOfTheWeek)
                 FrequencyType.CUSTOM -> HabitFrequency.Custom(selectedDaysOfMonth)
             }
 
         val isSaveEnabled: Boolean
             get() = name.isNotBlank() && when (frequencyType) {
                 FrequencyType.DAILY -> true
-                FrequencyType.WEEKLY -> selectedDays.isNotEmpty()
+                FrequencyType.WEEKLY -> selectedDaysOfTheWeek.isNotEmpty()
                 FrequencyType.CUSTOM -> selectedDaysOfMonth.isNotEmpty()
             }
     }
