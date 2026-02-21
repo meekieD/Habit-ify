@@ -21,7 +21,7 @@ import com.dyusov.core.database.utils.HabitConverters
         HabitDbModel::class,
         HabitCompletionDbModel::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @TypeConverters(HabitConverters::class, DateConverters::class)
@@ -48,7 +48,7 @@ abstract class HabitDatabase : RoomDatabase() {
                     context = context,
                     klass = HabitDatabase::class.java,
                     name = "habit-ify.db"
-                ).build()
+                ).fallbackToDestructiveMigration(dropAllTables = true).build()
                     .also {
                         instance = it
                     }
