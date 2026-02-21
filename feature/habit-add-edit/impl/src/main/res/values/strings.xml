@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="new_habit">New habit</string>
+    <string name="back_to_main_screen">Back to main screen</string>
+    <string name="habit_name">Habit name</string>
+    <string name="description">Description</string>
+    <string name="frequency">Frequency</string>
+    <string name="save_habit">Save Habit</string>
+    <string name="days_of_week">Days of week</string>
+    <string name="days_of_month">Days of month</string>
+    <string name="color">Color</string>
+</resources>

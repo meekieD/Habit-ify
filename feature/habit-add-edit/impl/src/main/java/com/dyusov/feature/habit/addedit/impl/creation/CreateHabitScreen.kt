@@ -57,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -64,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.dyusov.core.model.FrequencyType
 import com.dyusov.core.ui.habit.HabitCardDefaults
+import com.dyusov.feature.habit.addedit.impl.R
 import com.dyusov.feature.habit.addedit.impl.utils.HabitScreenUtils
 import kotlinx.datetime.DayOfWeek
 
@@ -84,7 +86,7 @@ fun CreateHabitScreen(
                     TopAppBar(
                         title = {
                             Text(
-                                text = "New habit",
+                                text = stringResource(R.string.new_habit),
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 color = MaterialTheme.colorScheme.onBackground
@@ -98,7 +100,7 @@ fun CreateHabitScreen(
                                         viewModel.processCommand(CreateHabitCommand.Back)
                                     },
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back to main screen",
+                                contentDescription = stringResource(R.string.back_to_main_screen),
                             )
                         },
                         colors = TopAppBarDefaults.topAppBarColors(
@@ -124,7 +126,7 @@ fun CreateHabitScreen(
 
                         // Name
                         HabitField(
-                            label = "Habit name",
+                            label = stringResource(R.string.habit_name),
                             value = currentState.name,
                             placeholder = "e.g. Morning run",
                             onValueChange = {
@@ -138,7 +140,7 @@ fun CreateHabitScreen(
 
                         // Description
                         HabitField(
-                            label = "Description",
+                            label = stringResource(R.string.description),
                             value = currentState.description ?: "",
                             placeholder = "Optional details…",
                             onValueChange = {
@@ -152,7 +154,6 @@ fun CreateHabitScreen(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         // Frequency type
-                        SectionLabel(text = "Frequency")
                         FrequencySelector(
                             selected = currentState.frequencyType,
                             onSelect = {
@@ -255,7 +256,7 @@ fun SaveHabitButton(
         ),
     ) {
         Text(
-            text = "Save Habit",
+            text = stringResource(R.string.save_habit),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 0.7.sp
@@ -341,6 +342,7 @@ private fun FrequencySelector(
     selected: FrequencyType,
     onSelect: (FrequencyType) -> Unit
 ) {
+    SectionLabel(text = stringResource(R.string.frequency))
     SingleChoiceSegmentedButtonRow(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -377,7 +379,7 @@ private fun WeekdayPicker(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        SectionLabel(text = "Days of week")
+        SectionLabel(text = stringResource(R.string.days_of_week))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -452,7 +454,7 @@ private fun MonthDayPicker(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        SectionLabel(text = "Days of month")
+        SectionLabel(text = stringResource(R.string.days_of_month))
         LazyVerticalGrid(
             columns = GridCells.Fixed(7),
             modifier = Modifier
@@ -533,7 +535,7 @@ private fun ColorPicker(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        SectionLabel(text = "Color")
+        SectionLabel(text = stringResource(R.string.color))
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
