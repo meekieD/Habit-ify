@@ -7,11 +7,10 @@ import com.dyusov.core.common.datetime.DateTimeProvider
 import com.dyusov.core.common.datetime.nowClock
 import com.dyusov.core.common.utils.onError
 import com.dyusov.core.common.utils.onSuccess
+import com.dyusov.core.domain.habit.DeleteHabitUseCase
 import com.dyusov.core.domain.habit.GetAllHabitsUseCase
-import com.dyusov.core.domain.habit.UpdateHabitUseCase
 import com.dyusov.core.domain.tracking.ToggleHabitCompletionOnDateUseCase
 import com.dyusov.core.model.Habit
-import com.dyusov.core.model.HabitFrequency
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,9 +26,8 @@ import javax.inject.Inject
 class HabitAgendaViewModel @Inject constructor(
     private val getAllHabitsUseCase: GetAllHabitsUseCase,
     private val toggleHabitCompletionOnDateUseCase: ToggleHabitCompletionOnDateUseCase,
-    private val dateTimeProvider: DateTimeProvider,
-    // TODO: for test
-    private val updateHabitUseCase: UpdateHabitUseCase
+    private val deleteHabitUseCase: DeleteHabitUseCase,
+    private val dateTimeProvider: DateTimeProvider
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HabitAgendaState())
@@ -39,7 +37,6 @@ class HabitAgendaViewModel @Inject constructor(
     val refreshState = _isRefreshing.asStateFlow()
 
     init {
-        createTestHabits()
         loadHabits()
     }
 
@@ -85,52 +82,12 @@ class HabitAgendaViewModel @Inject constructor(
                         date = dateTimeProvider.nowLocalDate()
                     )
                 }
+
+                is HabitAgendaCommand.DeleteHabit -> {
+                    deleteHabitUseCase(habitId = command.habitId)
+                }
             }
         }
-    }
-
-    // TODO: for test
-    private fun createTestHabits() {
-        viewModelScope.launch {
-            updateHabitUseCase(
-                Habit(
-                    id = 1,
-                    isCompletedToday = false,
-                    createdAt = System.currentTimeMillis(),
-                    updatedAt = System.currentTimeMillis(),
-                    name = "Зарядка",
-                    description = "Утренняя зарядка 10 минут",
-                    frequency = HabitFrequency.Daily,
-                    color = 0xFF4CAF50.toInt()
-                )
-
-            )
-            updateHabitUseCase(
-                Habit(
-                    id = 2,
-                    isCompletedToday = false,
-                    createdAt = System.currentTimeMillis(),
-                    updatedAt = System.currentTimeMillis(),
-                    name = "Чтение",
-                    description = "Читать 30 минут перед сном",
-                    frequency = HabitFrequency.Daily,
-                    color = 0xFF2196F3.toInt()
-                )
-            )
-            updateHabitUseCase(
-                Habit(
-                    id = 3,
-                    isCompletedToday = false,
-                    createdAt = System.currentTimeMillis(),
-                    updatedAt = System.currentTimeMillis(),
-                    name = "Медитация",
-                    description = "5 минут медитации",
-                    frequency = HabitFrequency.Daily,
-                    color = 0xFF9C27B0.toInt()
-                )
-            )
-        }
-
     }
 }
 
@@ -138,6 +95,7 @@ class HabitAgendaViewModel @Inject constructor(
 sealed interface HabitAgendaCommand {
     data object RefreshData : HabitAgendaCommand
     data class ToggleHabitCompletion(val habitId: Long) : HabitAgendaCommand
+    data class DeleteHabit(val habitId: Long) : HabitAgendaCommand
 }
 
 // screen state

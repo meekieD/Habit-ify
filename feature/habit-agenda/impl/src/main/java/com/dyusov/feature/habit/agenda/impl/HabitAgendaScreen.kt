@@ -128,7 +128,12 @@ fun HabitAgendaScreen(
                             command = HabitAgendaCommand.ToggleHabitCompletion(habit.id)
                         )
                     },
-                    onHabitClick = onFirstScreenButtonClick
+                    onHabitClick = onHabitClick,
+                    onLongHabitClick = {
+                        viewModel.processCommand(
+                            command = HabitAgendaCommand.DeleteHabit(habit.id)
+                        )
+                    }
                 )
             }
         }
@@ -139,7 +144,8 @@ fun HabitAgendaScreen(
 fun SwipeableHabitItem(
     habit: Habit,
     onHabitSwipe: () -> Unit,
-    onHabitClick: () -> Unit
+    onHabitClick: () -> Unit,
+    onLongHabitClick: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val dismissState = rememberSwipeToDismissBoxState(
@@ -180,7 +186,8 @@ fun SwipeableHabitItem(
         content = {
             HabitCardContent(
                 habit = habit,
-                onHabitClick = onHabitClick
+                onHabitClick = onHabitClick,
+                onLongHabitClick = onLongHabitClick
             )
         }
     )
@@ -241,12 +248,16 @@ private fun ActionIcon(
 private fun HabitCardContent(
     modifier: Modifier = Modifier,
     habit: Habit,
-    onHabitClick: () -> Unit
+    onHabitClick: () -> Unit,
+    onLongHabitClick: () -> Unit
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onHabitClick),
+            .combinedClickable(
+                onClick = onHabitClick,
+                onLongClick = onLongHabitClick
+            ),
         shape = RoundedCornerShape(HabitCardDefaults.cornerRadius),
         colors = CardDefaults.cardColors(
             containerColor = Color(habit.color.toPastel())
