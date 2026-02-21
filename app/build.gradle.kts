@@ -44,6 +44,9 @@ android {
     buildFeatures {
         compose = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.1.1"
+    }
 }
 
 dependencies {
@@ -61,6 +64,10 @@ dependencies {
     implementation(project(":feature:habit-add-edit:impl"))
     implementation(project(":feature:habit-details:api"))
     implementation(project(":feature:habit-details:impl"))
+
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.material3.window.size.class1)
+    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
