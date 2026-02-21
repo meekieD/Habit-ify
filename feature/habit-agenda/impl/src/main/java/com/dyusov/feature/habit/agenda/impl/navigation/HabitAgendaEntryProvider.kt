@@ -6,13 +6,13 @@ import com.dyusov.feature.habit.agenda.api.navigation.HabitAgendaNavKey
 import com.dyusov.feature.habit.agenda.impl.HabitAgendaScreen
 
 fun EntryProviderScope<NavKey>.habitAgendaEntry(
-    onFirstScreenButtonClick: () -> Unit,
-    onSecondScreenButtonClick: () -> Unit
+    onHabitDetailsScreen: () -> Unit,
+    onHabitCreationScreen: () -> Unit
 ) {
     entry<HabitAgendaNavKey> {
         HabitAgendaScreen(
-            onFirstScreenButtonClick = onFirstScreenButtonClick,
-            onSecondScreenButtonClick = onSecondScreenButtonClick
+            onHabitClick = onHabitDetailsScreen,
+            onAddHabitClick = onHabitCreationScreen
         )
     }
 }

@@ -19,21 +19,18 @@ fun NavRoute() {
 
     val appProvider = entryProvider {
         habitAgendaEntry(
-            onFirstScreenButtonClick = {
-                backstack.removeLastOrNull()
-                backstack.add(HabitAddEditNavKey("fromAgenda"))
-            }, onSecondScreenButtonClick = {
+            onHabitDetailsScreen = {
                 backstack.removeLastOrNull()
                 backstack.add(HabitDetailsNavKey("fromAgenda"))
+            }, onHabitCreationScreen = {
+                backstack.removeLastOrNull()
+                backstack.add(HabitAddEditNavKey("fromAgenda"))
             }
         )
         habitAddEditEntry(
-            onFirstScreenButtonClick = {
+            onBackToMainScreenButtonClick = {
                 backstack.removeLastOrNull()
                 backstack.add(HabitAgendaNavKey)
-            }, onSecondScreenButtonClick = {
-                backstack.removeLastOrNull()
-                backstack.add(HabitDetailsNavKey("fromAddEdit"))
             }
         )
         habitDetailsEntry(
