@@ -64,7 +64,11 @@ class CreateHabitViewModel @Inject constructor(
                     _state.update { currentState ->
                         if (currentState is CreateHabitState.Creation) {
                             val currentDays = currentState.selectedDaysOfTheWeek
-                            currentState.copy(selectedDaysOfTheWeek = currentDays + command.day)
+                            if (currentState.selectedDaysOfTheWeek.contains(command.day)) {
+                                currentState.copy(selectedDaysOfTheWeek = currentDays - command.day)
+                            } else {
+                                currentState.copy(selectedDaysOfTheWeek = currentDays + command.day)
+                            }
                         } else {
                             currentState
                         }
@@ -75,7 +79,11 @@ class CreateHabitViewModel @Inject constructor(
                     _state.update { currentState ->
                         if (currentState is CreateHabitState.Creation) {
                             val currentDays = currentState.selectedDaysOfMonth
-                            currentState.copy(selectedDaysOfMonth = currentDays + command.day)
+                            if (currentState.selectedDaysOfMonth.contains(command.day)) {
+                                currentState.copy(selectedDaysOfMonth = currentDays - command.day)
+                            } else {
+                                currentState.copy(selectedDaysOfMonth = currentDays + command.day)
+                            }
                         } else {
                             currentState
                         }
