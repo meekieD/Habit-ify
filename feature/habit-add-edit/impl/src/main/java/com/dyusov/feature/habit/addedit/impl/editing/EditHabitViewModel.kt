@@ -10,6 +10,7 @@ import com.dyusov.core.domain.habit.DeleteHabitUseCase
 import com.dyusov.core.domain.habit.GetHabitUseCase
 import com.dyusov.core.domain.habit.UpdateHabitUseCase
 import com.dyusov.core.model.FrequencyType
+import com.dyusov.core.model.Habit
 import com.dyusov.core.model.HabitFrequency
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -49,26 +50,7 @@ class EditHabitViewModel @AssistedInject constructor(
                         "Got habit with id=$habitId: $habit"
                     )
                     _state.update {
-                        val frequency = habit.frequency
-
-                        EditHabitState.Editing(
-                            name = habit.name,
-                            description = habit.description,
-                            frequencyType = when (frequency) {
-                                is HabitFrequency.Daily -> FrequencyType.DAILY
-                                is HabitFrequency.Weekly -> FrequencyType.WEEKLY
-                                is HabitFrequency.Custom -> FrequencyType.CUSTOM
-                            },
-                            selectedDaysOfTheWeek = when (frequency) {
-                                is HabitFrequency.Weekly -> frequency.daysOfWeek
-                                else -> setOf(LocalDate.nowClock().dayOfWeek)
-                            },
-                            selectedDaysOfMonth = when (frequency) {
-                                is HabitFrequency.Custom -> frequency.daysOfMonth
-                                else -> setOf(LocalDate.nowClock().day)
-                            },
-                            color = habit.color
-                        )
+                        EditHabitState.Editing(habit = habit)
                     }
                 }
                 .onError { error ->
@@ -86,15 +68,141 @@ class EditHabitViewModel @AssistedInject constructor(
     fun processCommand(command: EditHabitCommand) {
         viewModelScope.launch {
             when (command) {
-                EditHabitCommand.Back -> TODO()
-                EditHabitCommand.Delete -> TODO()
-                is EditHabitCommand.InputDescription -> TODO()
-                is EditHabitCommand.InputName -> TODO()
-                EditHabitCommand.Save -> TODO()
-                is EditHabitCommand.SelectColor -> TODO()
-                is EditHabitCommand.SelectFrequencyType -> TODO()
-                is EditHabitCommand.ToggleDayOfMonth -> TODO()
-                is EditHabitCommand.ToggleDayOfWeek -> TODO()
+                EditHabitCommand.Back -> {
+                    _state.update {
+                        EditHabitState.Finished
+                    }
+                }
+
+                EditHabitCommand.Delete -> {
+                    _state.update { currentState ->
+                        if (currentState is EditHabitState.Editing) {
+                            deleteHabitUseCase(currentState.habit.id)
+                            EditHabitState.Finished
+                        } else {
+                            currentState
+                        }
+                    }
+                }
+
+                is EditHabitCommand.InputDescription -> {
+                    _state.update { currentState ->
+                        if (currentState is EditHabitState.Editing) {
+                            currentState.copy(
+                                habit = currentState.habit.copy(
+                                    description = command.description
+                                )
+                            )
+                        } else {
+                            currentState
+                        }
+                    }
+                }
+
+                is EditHabitCommand.InputName -> {
+                    _state.update { currentState ->
+                        if (currentState is EditHabitState.Editing) {
+                            currentState.copy(
+                                habit = currentState.habit.copy(
+                                    name = command.name
+                                )
+                            )
+                        } else {
+                            currentState
+                        }
+                    }
+                }
+
+                EditHabitCommand.Save -> {
+                    _state.update { currentState ->
+                        if (currentState is EditHabitState.Editing) {
+                            updateHabitUseCase(habit = currentState.habit)
+                            EditHabitState.Finished
+                        } else {
+                            currentState
+                        }
+                    }
+                }
+
+                is EditHabitCommand.SelectColor -> {
+                    _state.update { currentState ->
+                        if (currentState is EditHabitState.Editing) {
+                            currentState.copy(
+                                habit = currentState.habit.copy(
+                                    color = command.color
+                                )
+                            )
+                        } else {
+                            currentState
+                        }
+                    }
+                }
+
+                is EditHabitCommand.SelectFrequencyType -> {
+                    _state.update { currentState ->
+                        if (currentState is EditHabitState.Editing) {
+                            val newFrequency = when (command.type) {
+                                FrequencyType.DAILY -> HabitFrequency.Daily
+                                FrequencyType.WEEKLY -> HabitFrequency.Weekly(
+                                    daysOfWeek = currentState.selectedDaysOfTheWeek
+                                )
+
+                                FrequencyType.CUSTOM -> HabitFrequency.Custom(
+                                    daysOfMonth = currentState.selectedDaysOfMonth
+                                )
+                            }
+                            currentState.copy(
+                                habit = currentState.habit.copy(
+                                    frequency = newFrequency
+                                )
+                            )
+                        } else {
+                            currentState
+                        }
+                    }
+                }
+
+                is EditHabitCommand.ToggleDayOfMonth -> {
+                    _state.update { currentState ->
+                        if (currentState is EditHabitState.Editing) {
+                            val selectedDays = currentState.selectedDaysOfMonth.let {
+                                if (it.contains(command.day)) {
+                                    it - command.day
+                                } else {
+                                    it + command.day
+                                }
+                            }
+                            currentState.copy(
+                                habit = currentState.habit.copy(
+                                    frequency = HabitFrequency.Custom(daysOfMonth = selectedDays)
+                                )
+                            )
+                        } else {
+                            currentState
+                        }
+                    }
+                }
+
+                is EditHabitCommand.ToggleDayOfWeek -> {
+                    _state.update { currentState ->
+                        if (currentState is EditHabitState.Editing) {
+                            val selectedDays = currentState.selectedDaysOfTheWeek.let {
+                                if (it.contains(command.day)) {
+                                    it - command.day
+                                } else {
+                                    it + command.day
+                                }
+                            }
+                            currentState.copy(
+                                habit = currentState.habit.copy(
+                                    frequency = HabitFrequency.Weekly(daysOfWeek = selectedDays)
+                                )
+                            )
+                        } else {
+                            currentState
+                        }
+                    }
+                }
             }
         }
     }
@@ -125,27 +233,32 @@ sealed interface EditHabitState {
     data object Initial : EditHabitState
 
     data class Editing(
-        val name: String,
-        val description: String?,
-        val frequencyType: FrequencyType,
-        val selectedDaysOfTheWeek: Set<DayOfWeek>,
-        val selectedDaysOfMonth: Set<Int>,
-        val color: Int,
+        val habit: Habit,
         val error: String? = null
     ) : EditHabitState {
 
-        val frequency: HabitFrequency
-            get() = when (frequencyType) {
-                FrequencyType.DAILY -> HabitFrequency.Daily
-                FrequencyType.WEEKLY -> HabitFrequency.Weekly(selectedDaysOfTheWeek)
-                FrequencyType.CUSTOM -> HabitFrequency.Custom(selectedDaysOfMonth)
+        val frequencyType: FrequencyType
+            get() = when (habit.frequency) {
+                is HabitFrequency.Daily -> FrequencyType.DAILY
+                is HabitFrequency.Weekly -> FrequencyType.WEEKLY
+                is HabitFrequency.Custom -> FrequencyType.CUSTOM
             }
 
+        val selectedDaysOfTheWeek: Set<DayOfWeek>
+            get() = (habit.frequency as? HabitFrequency.Weekly)?.daysOfWeek
+                ?: setOf(LocalDate.nowClock().dayOfWeek)
+
+        val selectedDaysOfMonth: Set<Int>
+            get() = (habit.frequency as? HabitFrequency.Custom)?.daysOfMonth
+                ?: setOf(LocalDate.nowClock().day)
+
         val isSaveEnabled: Boolean
-            get() = name.isNotBlank() && when (frequencyType) {
+            get() = habit.name.isNotBlank() && when (frequencyType) {
                 FrequencyType.DAILY -> true
                 FrequencyType.WEEKLY -> selectedDaysOfTheWeek.isNotEmpty()
                 FrequencyType.CUSTOM -> selectedDaysOfMonth.isNotEmpty()
             }
     }
+
+    data object Finished : EditHabitState
 }
