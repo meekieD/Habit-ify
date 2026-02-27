@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HabitDetailsScreenPlaceholder(
-    habitId: String,
+    habitId: Long,
     onFirstScreenButtonClick: () -> Unit,
-    onSecondScreenButtonClick: () -> Unit
+    onSecondScreenButtonClick: (Long) -> Unit
 ) {
     Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
         Column(
@@ -37,9 +37,6 @@ fun HabitDetailsScreenPlaceholder(
                     Text("Go to Agenda")
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Button(onClick = onSecondScreenButtonClick) {
-                    Text("Go to Add Edit")
-                }
             }
         }
     }

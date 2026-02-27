@@ -6,11 +6,12 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.dyusov.feature.habit.addedit.api.navigation.HabitAddEditNavKey
-import com.dyusov.feature.habit.addedit.impl.navigation.habitAddEditEntry
+import com.dyusov.feature.habit.addedit.api.navigation.CreateHabitNavKey
+import com.dyusov.feature.habit.addedit.api.navigation.EditHabitNavKey
+import com.dyusov.feature.habit.addedit.impl.navigation.createHabitEntry
+import com.dyusov.feature.habit.addedit.impl.navigation.editHabitEntry
 import com.dyusov.feature.habit.agenda.api.navigation.HabitAgendaNavKey
 import com.dyusov.feature.habit.agenda.impl.navigation.habitAgendaEntry
-import com.dyusov.feature.habit.details.api.navigation.HabitDetailsNavKey
 import com.dyusov.feature.habit.details.impl.navigation.habitDetailsEntry
 
 @Composable
@@ -19,27 +20,35 @@ fun NavRoute() {
 
     val appProvider = entryProvider {
         habitAgendaEntry(
-            onHabitDetailsScreen = {
+            onHabitDetailsScreen = { habitId: Long ->
                 backstack.removeLastOrNull()
-                backstack.add(HabitDetailsNavKey("fromAgenda"))
-            }, onHabitCreationScreen = {
+                backstack.add(EditHabitNavKey(habitId))
+            },
+            onHabitCreationScreen = {
                 backstack.removeLastOrNull()
-                backstack.add(HabitAddEditNavKey("fromAgenda"))
+                backstack.add(CreateHabitNavKey)
             }
         )
-        habitAddEditEntry(
+        createHabitEntry(
+            onBackToMainScreenButtonClick = {
+                backstack.removeLastOrNull()
+                backstack.add(HabitAgendaNavKey)
+            }
+        )
+        editHabitEntry(
             onBackToMainScreenButtonClick = {
                 backstack.removeLastOrNull()
                 backstack.add(HabitAgendaNavKey)
             }
         )
         habitDetailsEntry(
-            onFirstScreenButtonClick = {
+            onHabitAgendaScreen = {
                 backstack.removeLastOrNull()
                 backstack.add(HabitAgendaNavKey)
-            }, onSecondScreenButtonClick = {
+            },
+            onEditHabitScreen = { habitId: Long ->
                 backstack.removeLastOrNull()
-                backstack.add(HabitAddEditNavKey("fromDetails"))
+                backstack.add(EditHabitNavKey(habitId))
             }
         )
     }

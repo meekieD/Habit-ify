@@ -4,4 +4,4 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class HabitAddEditNavKey(val habitId: String): NavKey
+data class EditHabitNavKey(val habitId: Long): NavKey

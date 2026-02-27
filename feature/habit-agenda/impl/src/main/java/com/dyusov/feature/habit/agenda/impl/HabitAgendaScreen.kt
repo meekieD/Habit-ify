@@ -63,7 +63,7 @@ import kotlinx.coroutines.launch
 fun HabitAgendaScreen(
     modifier: Modifier = Modifier,
     viewModel: HabitAgendaViewModel = hiltViewModel(),
-    onHabitClick: () -> Unit,
+    onHabitClick: (Long) -> Unit,
     onAddHabitClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -128,7 +128,9 @@ fun HabitAgendaScreen(
                             command = HabitAgendaCommand.ToggleHabitCompletion(habit.id)
                         )
                     },
-                    onHabitClick = onHabitClick,
+                    onHabitClick = {
+                        onHabitClick(habit.id)
+                    },
                     onLongHabitClick = {
                         viewModel.processCommand(
                             command = HabitAgendaCommand.DeleteHabit(habit.id)

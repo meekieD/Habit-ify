@@ -7,14 +7,16 @@ import com.dyusov.feature.habit.details.impl.HabitDetailsScreenPlaceholder
 
 // todo: change placeholder
 fun EntryProviderScope<NavKey>.habitDetailsEntry(
-    onFirstScreenButtonClick: () -> Unit,
-    onSecondScreenButtonClick: () -> Unit
+    onHabitAgendaScreen: () -> Unit,
+    onEditHabitScreen: (Long) -> Unit
 ) {
     entry<HabitDetailsNavKey> { key ->
         HabitDetailsScreenPlaceholder(
             key.habitId,
-            onFirstScreenButtonClick,
-            onSecondScreenButtonClick
+            onFirstScreenButtonClick = onHabitAgendaScreen,
+            onSecondScreenButtonClick = {
+                habitId -> onEditHabitScreen(habitId)
+            }
         )
     }
 }
