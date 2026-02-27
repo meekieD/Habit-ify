@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.dyusov.feature.habit.addedit.impl.creation
+package com.dyusov.feature.habit.addedit.impl.editing
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,23 +50,29 @@ import com.dyusov.feature.habit.addedit.impl.common.WeekdayPicker
 import com.dyusov.feature.habit.addedit.impl.utils.HabitScreenUtils
 
 @Composable
-fun CreateHabitScreen(
+fun EditHabitScreen(
     modifier: Modifier = Modifier,
-    viewModel: CreateHabitViewModel = hiltViewModel(),
+    habitId: Long,
+    viewModel: EditHabitViewModel = hiltViewModel(
+        creationCallback = { factory: EditHabitViewModel.Factory ->
+            factory.create(habitId)
+        },
+    ),
     onFinished: () -> Unit
 ) {
 
     val state by viewModel.state.collectAsState()
 
     when (val currentState = state) {
-        is CreateHabitState.Creation -> {
+        EditHabitState.Initial -> {}
+        is EditHabitState.Editing -> {
             Scaffold(
                 modifier = modifier,
                 topBar = {
                     TopAppBar(
                         title = {
                             Text(
-                                text = stringResource(R.string.new_habit),
+                                text = stringResource(R.string.edit_habit),
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 color = MaterialTheme.colorScheme.onBackground
@@ -76,10 +83,21 @@ fun CreateHabitScreen(
                                 modifier = Modifier
                                     .padding(start = 16.dp, end = 8.dp)
                                     .clickable {
-                                        viewModel.processCommand(CreateHabitCommand.Back)
+                                        viewModel.processCommand(EditHabitCommand.Back)
                                     },
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = stringResource(R.string.back_to_main_screen),
+                            )
+                        },
+                        actions = {
+                            Icon(
+                                modifier = Modifier
+                                    .padding(end = 24.dp)
+                                    .clickable {
+                                        viewModel.processCommand(EditHabitCommand.Delete)
+                                    },
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = stringResource(R.string.delete_habit)
                             )
                         },
                         colors = TopAppBarDefaults.topAppBarColors(
@@ -106,11 +124,11 @@ fun CreateHabitScreen(
                         // Name
                         HabitField(
                             label = stringResource(R.string.habit_name),
-                            value = currentState.name,
+                            value = currentState.habit.name,
                             placeholder = "e.g. Morning run",
                             onValueChange = {
                                 viewModel.processCommand(
-                                    command = CreateHabitCommand.InputName(it)
+                                    command = EditHabitCommand.InputName(it)
                                 )
                             }
                         )
@@ -120,11 +138,11 @@ fun CreateHabitScreen(
                         // Description
                         HabitField(
                             label = stringResource(R.string.description),
-                            value = currentState.description ?: "",
+                            value = currentState.habit.description ?: "",
                             placeholder = "Optional details…",
                             onValueChange = {
                                 viewModel.processCommand(
-                                    command = CreateHabitCommand.InputDescription(it)
+                                    command = EditHabitCommand.InputDescription(it)
                                 )
                             },
                             minLines = 2
@@ -137,7 +155,7 @@ fun CreateHabitScreen(
                             selected = currentState.frequencyType,
                             onSelect = {
                                 viewModel.processCommand(
-                                    command = CreateHabitCommand.SelectFrequencyType(it)
+                                    command = EditHabitCommand.SelectFrequencyType(it)
                                 )
                             }
                         )
@@ -152,7 +170,7 @@ fun CreateHabitScreen(
                                 selectedDays = currentState.selectedDaysOfTheWeek,
                                 onSelectToggle = {
                                     viewModel.processCommand(
-                                        command = CreateHabitCommand.ToggleDayOfWeek(it)
+                                        command = EditHabitCommand.ToggleDayOfWeek(it)
                                     )
                                 }
                             )
@@ -167,7 +185,7 @@ fun CreateHabitScreen(
                                 selectedDays = currentState.selectedDaysOfMonth,
                                 onSelectToggle = {
                                     viewModel.processCommand(
-                                        command = CreateHabitCommand.ToggleDayOfMonth(it)
+                                        command = EditHabitCommand.ToggleDayOfMonth(it)
                                     )
                                 }
                             )
@@ -177,11 +195,11 @@ fun CreateHabitScreen(
 
                         // Color
                         ColorPicker(
-                            selectedColor = currentState.color,
+                            selectedColor = currentState.habit.color,
                             colors = HabitScreenUtils.habitColors,
                             onSelect = {
                                 viewModel.processCommand(
-                                    command = CreateHabitCommand.SelectColor(it)
+                                    command = EditHabitCommand.SelectColor(it)
                                 )
                             }
                         )
@@ -196,7 +214,7 @@ fun CreateHabitScreen(
                         SaveHabitButton(
                             onClick = {
                                 viewModel.processCommand(
-                                    command = CreateHabitCommand.Save
+                                    command = EditHabitCommand.Save
                                 )
                             },
                             enabled = currentState.isSaveEnabled
@@ -206,7 +224,7 @@ fun CreateHabitScreen(
             }
         }
 
-        CreateHabitState.Finished -> {
+        EditHabitState.Finished -> {
             LaunchedEffect(key1 = Unit) {
                 onFinished()
             }
