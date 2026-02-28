@@ -12,6 +12,7 @@ import com.dyusov.feature.habit.addedit.impl.navigation.createHabitEntry
 import com.dyusov.feature.habit.addedit.impl.navigation.editHabitEntry
 import com.dyusov.feature.habit.agenda.api.navigation.HabitAgendaNavKey
 import com.dyusov.feature.habit.agenda.impl.navigation.habitAgendaEntry
+import com.dyusov.feature.habit.details.api.navigation.HabitDetailsNavKey
 import com.dyusov.feature.habit.details.impl.navigation.habitDetailsEntry
 
 @Composable
@@ -22,7 +23,7 @@ fun NavRoute() {
         habitAgendaEntry(
             onHabitDetailsScreen = { habitId: Long ->
                 backstack.removeLastOrNull()
-                backstack.add(EditHabitNavKey(habitId))
+                backstack.add(HabitDetailsNavKey(habitId))
             },
             onHabitCreationScreen = {
                 backstack.removeLastOrNull()

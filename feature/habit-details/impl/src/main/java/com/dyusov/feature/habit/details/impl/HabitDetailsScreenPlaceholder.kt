@@ -37,6 +37,11 @@ fun HabitDetailsScreenPlaceholder(
                     Text("Go to Agenda")
                 }
                 Spacer(modifier = Modifier.width(16.dp))
+                Button(onClick = {
+                    onSecondScreenButtonClick(habitId)
+                }) {
+                    Text("Edit habit with id $habitId")
+                }
             }
         }
     }
