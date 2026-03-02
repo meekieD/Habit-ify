@@ -11,4 +11,6 @@ interface DateTimeProvider {
     fun nowLocalDate(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDate
 
     fun nowLocalDateTime(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDateTime
+
+    fun timeZone(): TimeZone
 }

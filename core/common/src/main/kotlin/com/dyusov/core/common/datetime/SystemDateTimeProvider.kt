@@ -18,4 +18,8 @@ class SystemDateTimeProvider @Inject constructor() : DateTimeProvider {
     override fun nowLocalDateTime(timeZone: TimeZone): LocalDateTime {
         return now().toLocalDateTime(timeZone)
     }
+
+    override fun timeZone(): TimeZone {
+        return TimeZone.currentSystemDefault()
+    }
 }
