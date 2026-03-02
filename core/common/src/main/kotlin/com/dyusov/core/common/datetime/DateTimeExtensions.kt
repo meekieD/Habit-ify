@@ -11,9 +11,21 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
+import kotlin.time.Instant
 
 fun LocalDate.Companion.nowClock(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDate {
     return Clock.System.now().toLocalDateTime(timeZone).date
+}
+
+fun Long.toLocalDate(timeZone: TimeZone): LocalDate =
+    Instant.fromEpochMilliseconds(this)
+        .toLocalDateTime(timeZone)
+        .date
+
+fun YearMonth.minusMonths(monthsToSubtract: Int): YearMonth {
+    val firstDayOfMonth = LocalDate(this.year, this.month, 1)
+    val pastDate = firstDayOfMonth.minus(monthsToSubtract, DateTimeUnit.MONTH)
+    return YearMonth(pastDate.year, pastDate.month)
 }
 
 fun LocalDate.isToday(timeZone: TimeZone = TimeZone.currentSystemDefault()): Boolean {
@@ -56,13 +68,13 @@ fun LocalDate.endOfWeek(): LocalDate {
 }
 
 // Начало и конец месяца
-
 fun YearMonth.Companion.now(
     timeZone: TimeZone = TimeZone.currentSystemDefault()
 ): YearMonth {
     val date = LocalDate.nowClock(timeZone)
     return YearMonth(date.year, date.month)
 }
+
 fun YearMonth.toStartOfMonthTimestamp(
     timeZone: TimeZone = TimeZone.currentSystemDefault()
 ): Long = firstDay.atStartOfDayIn(timeZone).toEpochMilliseconds()
