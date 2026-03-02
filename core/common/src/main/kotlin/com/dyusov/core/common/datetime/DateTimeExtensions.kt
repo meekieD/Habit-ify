@@ -4,6 +4,8 @@ import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -54,19 +56,23 @@ fun LocalDate.endOfWeek(): LocalDate {
 }
 
 // Начало и конец месяца
-fun LocalDate.startOfMonth(): LocalDate {
-    return LocalDate(year, month, 1)
-}
 
-fun LocalDate.endOfMonth(): LocalDate {
-    val daysInMonth = when (month.ordinal + 1) {
-        1, 3, 5, 7, 8, 10, 12 -> 31
-        4, 6, 9, 11 -> 30
-        2 -> if (isLeapYear(year)) 29 else 28
-        else -> throw IllegalStateException("Invalid month")
-    }
-    return LocalDate(year, month, daysInMonth)
+fun YearMonth.Companion.now(
+    timeZone: TimeZone = TimeZone.currentSystemDefault()
+): YearMonth {
+    val date = LocalDate.nowClock(timeZone)
+    return YearMonth(date.year, date.month)
 }
+fun YearMonth.toStartOfMonthTimestamp(
+    timeZone: TimeZone = TimeZone.currentSystemDefault()
+): Long = firstDay.atStartOfDayIn(timeZone).toEpochMilliseconds()
+
+fun YearMonth.toEndOfMonthTimestamp(
+    timeZone: TimeZone = TimeZone.currentSystemDefault()
+): Long = lastDay.plus(1, DateTimeUnit.DAY)
+    .atStartOfDayIn(timeZone)
+    .minus(1, DateTimeUnit.MILLISECOND)
+    .toEpochMilliseconds()
 
 // Проверка на високосный год
 private fun isLeapYear(year: Int): Boolean {
