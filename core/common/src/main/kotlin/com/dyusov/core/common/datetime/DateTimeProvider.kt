@@ -8,9 +8,9 @@ import kotlin.time.Instant
 interface DateTimeProvider {
     fun now(): Instant
 
-    fun nowLocalDate(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDate
+    fun nowLocalDate(timeZone: TimeZone = timeZone()): LocalDate
 
-    fun nowLocalDateTime(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDateTime
+    fun nowLocalDateTime(timeZone: TimeZone = timeZone()): LocalDateTime
 
     fun timeZone(): TimeZone
 }
