@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.dyusov.feature.habit.details.impl
 
 import android.util.Log
@@ -8,6 +10,7 @@ import com.dyusov.core.common.datetime.toEndOfMonthTimestamp
 import com.dyusov.core.common.datetime.toStartOfMonthTimestamp
 import com.dyusov.core.common.utils.onError
 import com.dyusov.core.common.utils.onSuccess
+import com.dyusov.core.domain.streak.CalculateStreakUseCase
 import com.dyusov.core.domain.tracking.GetHabitWithCompletionsInPeriodUseCase
 import com.dyusov.core.domain.tracking.ToggleHabitCompletionOnDateUseCase
 import com.dyusov.core.model.Habit
@@ -16,8 +19,12 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -27,6 +34,7 @@ import kotlinx.datetime.YearMonth
 class HabitDetailsViewModel @AssistedInject constructor(
     private val getHabitWithCompletionsInPeriodUseCase: GetHabitWithCompletionsInPeriodUseCase,
     private val toggleHabitCompletionOnDateUseCase: ToggleHabitCompletionOnDateUseCase,
+    private val calculateStreakUseCase: CalculateStreakUseCase,
     @Assisted("habitId") private val habitId: Long
 ) : ViewModel() {
 
@@ -43,6 +51,7 @@ class HabitDetailsViewModel @AssistedInject constructor(
 
     init {
         loadHabitDetails(YearMonth.now())
+        observeStreak()
     }
 
     fun processCommand(command: HabitDetailsCommand) {
@@ -101,6 +110,32 @@ class HabitDetailsViewModel @AssistedInject constructor(
             }
         }
     }
+
+    private fun observeStreak() {
+        viewModelScope.launch {
+            _state
+                .mapNotNull {
+                    (it as? HabitDetailsState.Content)?.habit
+                }
+                .distinctUntilChangedBy {
+                    it.id
+                }
+                .flatMapLatest { habit ->
+                    calculateStreakUseCase(habit)
+                }
+                .collect { result ->
+                    result.onSuccess { streak ->
+                        _state.update { currentState ->
+                            if (currentState is HabitDetailsState.Content) {
+                                currentState.copy(currentStreak = streak)
+                            } else {
+                                currentState
+                            }
+                        }
+                    }
+                }
+        }
+    }
 }
 
 sealed interface HabitDetailsCommand {
@@ -115,7 +150,8 @@ sealed interface HabitDetailsState {
     data class Content(
         val habit: Habit,
         val completions: List<HabitCompletion>,
-        val currentMonth: YearMonth
+        val currentMonth: YearMonth,
+        val currentStreak: Int = 0
     ) : HabitDetailsState
 
     data object Finished : HabitDetailsState
