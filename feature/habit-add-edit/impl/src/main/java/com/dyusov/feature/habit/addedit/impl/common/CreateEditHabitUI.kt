@@ -113,16 +113,7 @@ fun HabitField(
                 .fillMaxWidth()
                 .onFocusChanged {
                     isFocused = it.isFocused
-                }
-                .border(
-                    width = 0.75.dp,
-                    color = if (isFocused) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
-                    },
-                    shape = RoundedCornerShape(16.dp)
-                ),
+                },
             shape = RoundedCornerShape(16.dp),
             textStyle = TextStyle(
                 fontSize = 16.sp,
@@ -224,7 +215,7 @@ fun WeekdayPicker(
                             color = if (isSelected) {
                                 MaterialTheme.colorScheme.primary
                             } else {
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                                Color.Transparent
                             },
                             shape = if (isSelected) {
                                 RoundedCornerShape(16.dp)
@@ -304,7 +295,7 @@ fun MonthDayPicker(
                             if (isSelected) {
                                 MaterialTheme.colorScheme.primary
                             } else {
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                                Color.Transparent
                             },
                             shape = if (isSelected) {
                                 RoundedCornerShape(16.dp)
