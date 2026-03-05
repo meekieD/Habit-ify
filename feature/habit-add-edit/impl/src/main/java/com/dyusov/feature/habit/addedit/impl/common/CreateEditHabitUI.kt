@@ -130,16 +130,16 @@ fun HabitField(
                 color = MaterialTheme.colorScheme.onSurface
             ),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                focusedIndicatorColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
             ),
             minLines = minLines,
             placeholder = {
                 Text(
                     text = placeholder,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                     fontSize = 16.sp,
                     lineHeight = 24.sp
                 )
@@ -161,6 +161,11 @@ fun FrequencySelector(
         HabitScreenUtils.frequencySelectorOptions.forEachIndexed { index, (type, label) ->
             val isSelected = selected == type
             SegmentedButton(
+                colors = SegmentedButtonDefaults.colors().copy(
+                    activeBorderColor = Color.Transparent,
+                    inactiveBorderColor = Color.Transparent,
+                    inactiveContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                ),
                 shape = SegmentedButtonDefaults.itemShape(
                     index = index,
                     count = HabitScreenUtils.frequencySelectorOptions.size
