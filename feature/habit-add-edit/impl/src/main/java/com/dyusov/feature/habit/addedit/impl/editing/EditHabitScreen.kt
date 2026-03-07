@@ -64,6 +64,12 @@ fun EditHabitScreen(
 
     val state by viewModel.state.collectAsState()
 
+    LaunchedEffect(key1 = Unit) {
+        viewModel.navigationEvent.collect {
+            onFinished()
+        }
+    }
+
     when (val currentState = state) {
         EditHabitState.Initial -> {}
         is EditHabitState.Editing -> {
@@ -234,12 +240,6 @@ fun EditHabitScreen(
                         )
                     }
                 }
-            }
-        }
-
-        EditHabitState.Finished -> {
-            LaunchedEffect(key1 = Unit) {
-                onFinished()
             }
         }
     }

@@ -20,7 +20,9 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
@@ -48,6 +50,9 @@ class HabitDetailsViewModel @AssistedInject constructor(
 
     val state = _state.asStateFlow()
 
+    private val _navigationEvent = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val navigationEvent = _navigationEvent.asSharedFlow()
+
     init {
         Log.d("HabitDetailsViewModel", "init called with habitId=$habitId")
         loadHabitDetails(YearMonth.now())
@@ -74,9 +79,7 @@ class HabitDetailsViewModel @AssistedInject constructor(
                 }
 
                 is HabitDetailsCommand.Back -> {
-                    _state.update {
-                        HabitDetailsState.Finished
-                    }
+                    _navigationEvent.tryEmit(Unit)
                 }
             }
         }
@@ -157,6 +160,4 @@ sealed interface HabitDetailsState {
         val currentMonth: YearMonth,
         val currentStreak: Int = 0
     ) : HabitDetailsState
-
-    data object Finished : HabitDetailsState
 }

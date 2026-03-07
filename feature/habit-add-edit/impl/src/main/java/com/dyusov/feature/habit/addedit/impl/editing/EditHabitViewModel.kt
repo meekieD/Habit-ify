@@ -16,7 +16,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -40,6 +42,10 @@ class EditHabitViewModel @AssistedInject constructor(
         EditHabitState.Initial
     )
     val state = _state.asStateFlow()
+
+    private val _navigationEvent = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    val navigationEvent = _navigationEvent.asSharedFlow()
 
     init {
         viewModelScope.launch {
@@ -69,19 +75,14 @@ class EditHabitViewModel @AssistedInject constructor(
         viewModelScope.launch {
             when (command) {
                 EditHabitCommand.Back -> {
-                    _state.update {
-                        EditHabitState.Finished
-                    }
+                    _navigationEvent.tryEmit(Unit)
                 }
 
                 EditHabitCommand.Delete -> {
-                    _state.update { currentState ->
-                        if (currentState is EditHabitState.Editing) {
-                            deleteHabitUseCase(currentState.habit.id)
-                            EditHabitState.Finished
-                        } else {
-                            currentState
-                        }
+                    val currentState = _state.value
+                    if (currentState is EditHabitState.Editing) {
+                        deleteHabitUseCase(currentState.habit.id)
+                        _navigationEvent.tryEmit(Unit)
                     }
                 }
 
@@ -114,13 +115,10 @@ class EditHabitViewModel @AssistedInject constructor(
                 }
 
                 EditHabitCommand.Save -> {
-                    _state.update { currentState ->
-                        if (currentState is EditHabitState.Editing) {
-                            updateHabitUseCase(habit = currentState.habit)
-                            EditHabitState.Finished
-                        } else {
-                            currentState
-                        }
+                    val currentState = _state.value
+                    if (currentState is EditHabitState.Editing) {
+                        updateHabitUseCase(habit = currentState.habit)
+                        _navigationEvent.tryEmit(Unit)
                     }
                 }
 
@@ -259,6 +257,4 @@ sealed interface EditHabitState {
                 FrequencyType.CUSTOM -> selectedDaysOfMonth.isNotEmpty()
             }
     }
-
-    data object Finished : EditHabitState
 }

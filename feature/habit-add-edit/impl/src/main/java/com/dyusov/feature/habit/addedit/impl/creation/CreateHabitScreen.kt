@@ -58,6 +58,12 @@ fun CreateHabitScreen(
 
     val state by viewModel.state.collectAsState()
 
+    LaunchedEffect(key1 = Unit) {
+        viewModel.navigationEvent.collect {
+            onFinished()
+        }
+    }
+
     when (val currentState = state) {
         is CreateHabitState.Creation -> {
             Scaffold(
@@ -210,12 +216,6 @@ fun CreateHabitScreen(
                         )
                     }
                 }
-            }
-        }
-
-        CreateHabitState.Finished -> {
-            LaunchedEffect(key1 = Unit) {
-                onFinished()
             }
         }
     }

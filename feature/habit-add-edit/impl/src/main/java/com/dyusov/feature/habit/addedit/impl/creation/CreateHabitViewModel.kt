@@ -8,7 +8,9 @@ import com.dyusov.core.model.FrequencyType
 import com.dyusov.core.model.HabitFrequency
 import com.dyusov.core.ui.habit.HabitCardDefaults
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,6 +28,10 @@ class CreateHabitViewModel @Inject constructor(
     )
 
     val state = _state.asStateFlow()
+
+    private val _navigationEvent = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    val navigationEvent = _navigationEvent.asSharedFlow()
 
     fun processCommand(command: CreateHabitCommand) {
         viewModelScope.launch {
@@ -101,23 +107,20 @@ class CreateHabitViewModel @Inject constructor(
                 }
 
                 CreateHabitCommand.Save -> {
-                    _state.update { currentState ->
-                        if (currentState is CreateHabitState.Creation) {
-                            createHabitUseCase(
-                                name = currentState.name,
-                                description = currentState.description,
-                                frequency = currentState.frequency,
-                                color = currentState.color
-                            )
-                            CreateHabitState.Finished
-                        } else {
-                            currentState
-                        }
+                    val currentState = _state.value
+                    if (currentState is CreateHabitState.Creation) {
+                        createHabitUseCase(
+                            name = currentState.name,
+                            description = currentState.description,
+                            frequency = currentState.frequency,
+                            color = currentState.color
+                        )
+                        _navigationEvent.tryEmit(Unit)
                     }
                 }
 
                 CreateHabitCommand.Back -> {
-                    _state.update { CreateHabitState.Finished }
+                    _navigationEvent.tryEmit(Unit)
                 }
             }
         }
@@ -169,6 +172,4 @@ sealed interface CreateHabitState {
                 FrequencyType.CUSTOM -> selectedDaysOfMonth.isNotEmpty()
             }
     }
-
-    data object Finished : CreateHabitState
 }

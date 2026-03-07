@@ -82,6 +82,12 @@ fun HabitDetailsScreen(
     Log.d("HabitDetailsScreen", "Composed with habitId=$habitId")
     val state by viewModel.state.collectAsState()
 
+    LaunchedEffect(key1 = Unit) {
+        viewModel.navigationEvent.collect {
+            onFinished()
+        }
+    }
+
     when (state) {
         is HabitDetailsState.Initial -> {}
         is HabitDetailsState.Content -> HabitDetailsContentScreen(
@@ -91,12 +97,6 @@ fun HabitDetailsScreen(
             habitId = habitId,
             onEditHabit = onEditHabit
         )
-
-        is HabitDetailsState.Finished -> {
-            LaunchedEffect(key1 = Unit) {
-                onFinished()
-            }
-        }
     }
 }
 
