@@ -9,8 +9,8 @@ import androidx.core.graphics.ColorUtils
  * @return Pastel version of the color
  */
 fun Int.toPastel(
-    saturationFactor: Float = 0.5f,
-    lightnessFactor: Float = 0.8f
+    saturationFactor: Float = 0.9f,
+    lightnessFactor: Float = 0.75f
 ): Int {
     val hsl = FloatArray(3)
     ColorUtils.colorToHSL(this, hsl)
