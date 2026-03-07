@@ -1,7 +1,7 @@
 package com.dyusov.core.domain.streak
 
 import com.dyusov.core.common.datetime.DateTimeProvider
-import com.dyusov.core.common.datetime.minusMonths
+import com.dyusov.core.common.datetime.minus
 import com.dyusov.core.common.datetime.now
 import com.dyusov.core.common.datetime.startOfWeek
 import com.dyusov.core.model.Habit
@@ -109,7 +109,7 @@ sealed interface StreakCalculator {
 
                 streak++
 
-                month = month.minusMonths(1)
+                month = month.minus(1)
             }
             return streak
         }

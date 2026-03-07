@@ -8,6 +8,7 @@ import kotlinx.datetime.YearMonth
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
+import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
@@ -17,16 +18,27 @@ fun LocalDate.Companion.nowClock(timeZone: TimeZone = TimeZone.currentSystemDefa
     return Clock.System.now().toLocalDateTime(timeZone).date
 }
 
-fun Long.toLocalDate(timeZone: TimeZone): LocalDate =
+fun Long.toLocalDate(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDate =
     Instant.fromEpochMilliseconds(this)
         .toLocalDateTime(timeZone)
         .date
 
-fun YearMonth.minusMonths(monthsToSubtract: Int): YearMonth {
-    val firstDayOfMonth = LocalDate(this.year, this.month, 1)
-    val pastDate = firstDayOfMonth.minus(monthsToSubtract, DateTimeUnit.MONTH)
-    return YearMonth(pastDate.year, pastDate.month)
+fun LocalDate.toTimestamp(timeZone: TimeZone = TimeZone.currentSystemDefault()): Long =
+    this.atStartOfDayIn(timeZone).toEpochMilliseconds()
+
+fun YearMonth.plus(months: Int): YearMonth {
+    var y = this.year
+    var m = this.month.number + months
+    while (m > 12) {
+        m -= 12; y++
+    }
+    while (m < 1) {
+        m += 12; y--
+    }
+    return YearMonth(y, m)
 }
+
+fun YearMonth.minus(months: Int): YearMonth = plus(-months)
 
 fun LocalDate.isToday(timeZone: TimeZone = TimeZone.currentSystemDefault()): Boolean {
     return this == LocalDate.nowClock(timeZone)
