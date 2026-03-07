@@ -449,7 +449,9 @@ private fun CalendarGrid(
                                 date <= today &&
                                 date !in completedDates
                         }
-                        HabitFrequency.Daily -> false
+                        HabitFrequency.Daily -> {
+                            date <= today && date !in completedDates
+                        }
                     },
                     isToday = date == today,
                     isFuture = date > today,
