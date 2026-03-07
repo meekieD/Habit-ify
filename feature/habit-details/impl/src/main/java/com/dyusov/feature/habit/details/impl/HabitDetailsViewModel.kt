@@ -53,8 +53,8 @@ class HabitDetailsViewModel @AssistedInject constructor(
     private val _streakTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     init {
-        loadHabitDetails(month = YearMonth.now(), recalculateStreak = true)
         observeStreak()
+        loadHabitDetails(month = YearMonth.now(), recalculateStreak = true)
     }
 
     fun processCommand(command: HabitDetailsCommand) {
@@ -114,9 +114,9 @@ class HabitDetailsViewModel @AssistedInject constructor(
     private fun observeStreak() {
         viewModelScope.launch {
             Log.d("HabitDetailsViewModel", "observeStreak started")
-            _state
+            _streakTrigger
                 .mapNotNull {
-                    (it as? HabitDetailsState.Content)?.habit
+                    (_state.value as? HabitDetailsState.Content)?.habit
                 }
                 .flatMapLatest { habit ->
                     Log.d("HabitDetailsViewModel", "observeStreak: got habit=${habit.id}")
