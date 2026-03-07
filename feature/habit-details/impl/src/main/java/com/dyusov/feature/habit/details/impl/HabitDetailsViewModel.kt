@@ -22,7 +22,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
@@ -50,11 +49,13 @@ class HabitDetailsViewModel @AssistedInject constructor(
     val state = _state.asStateFlow()
 
     init {
+        Log.d("HabitDetailsViewModel", "init called with habitId=$habitId")
         loadHabitDetails(YearMonth.now())
         observeStreak()
     }
 
     fun processCommand(command: HabitDetailsCommand) {
+        Log.d("HabitDetailsViewModel", "processCommand: $command, current state: ${_state.value}")
         viewModelScope.launch {
             when (command) {
                 is HabitDetailsCommand.ToggleHabitCompletionOnDate -> {
@@ -82,6 +83,7 @@ class HabitDetailsViewModel @AssistedInject constructor(
     }
 
     private fun loadHabitDetails(month: YearMonth) {
+        Log.d("HabitDetailsViewModel", "loadHabitDetails called for month=$month, habitId=$habitId")
         viewModelScope.launch {
             getHabitWithCompletionsInPeriodUseCase(
                 habitId = habitId,
@@ -90,7 +92,7 @@ class HabitDetailsViewModel @AssistedInject constructor(
             ).onSuccess { habitWithCompletions ->
                 Log.d(
                     "HabitDetailsViewModel",
-                    "Got habit details with id=$habitId: $habitId"
+                    "Got habit details SUCCESS: habitId=${habitWithCompletions.habit.id}, completionsCount=${habitWithCompletions.completions.size}"
                 )
                 _state.update {
                     HabitDetailsState.Content(
@@ -99,10 +101,11 @@ class HabitDetailsViewModel @AssistedInject constructor(
                         currentMonth = month
                     )
                 }
+                Log.d("HabitDetailsViewModel", "State updated to Content")
             }.onError { error ->
-                Log.d(
+                Log.e(
                     "HabitDetailsViewModel",
-                    "Got error while getting habit details with id=$habitId: $error"
+                    "Got ERROR while getting habit details with id=$habitId: $error"
                 )
                 _state.update {
                     HabitDetailsState.Initial
@@ -113,6 +116,7 @@ class HabitDetailsViewModel @AssistedInject constructor(
 
     private fun observeStreak() {
         viewModelScope.launch {
+            Log.d("HabitDetailsViewModel", "observeStreak started")
             _state
                 .mapNotNull {
                     (it as? HabitDetailsState.Content)?.habit
@@ -121,12 +125,15 @@ class HabitDetailsViewModel @AssistedInject constructor(
                     it.id
                 }
                 .flatMapLatest { habit ->
+                    Log.d("HabitDetailsViewModel", "observeStreak: got habit=${habit.id}")
                     calculateStreakUseCase(habit)
                 }
                 .collect { result ->
+                    Log.d("HabitDetailsViewModel", "observeStreak: result=$result")
                     result.onSuccess { streak ->
                         _state.update { currentState ->
                             if (currentState is HabitDetailsState.Content) {
+                                Log.d("HabitDetailsViewModel", "observeStreak: updating streak to $streak")
                                 currentState.copy(currentStreak = streak)
                             } else {
                                 currentState

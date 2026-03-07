@@ -2,6 +2,7 @@
 
 package com.dyusov.feature.habit.details.impl
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -63,7 +64,6 @@ import com.dyusov.core.common.datetime.toLocalDate
 import com.dyusov.core.ui.habit.HabitCardDefaults
 import com.dyusov.feature.habit.details.impl.utils.frequencyLabel
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.YearMonth
 
 
@@ -79,6 +79,7 @@ fun HabitDetailsScreen(
     onEditHabit: (Long) -> Unit,
     onFinished: () -> Unit
 ) {
+    Log.d("HabitDetailsScreen", "Composed with habitId=$habitId")
     val state by viewModel.state.collectAsState()
 
     when (state) {
