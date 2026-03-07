@@ -61,6 +61,7 @@ import com.dyusov.core.common.datetime.now
 import com.dyusov.core.common.datetime.nowClock
 import com.dyusov.core.common.datetime.plus
 import com.dyusov.core.common.datetime.toLocalDate
+import com.dyusov.core.model.HabitFrequency
 import com.dyusov.core.ui.habit.HabitCardDefaults
 import com.dyusov.feature.habit.details.impl.utils.frequencyLabel
 import com.dyusov.feature.habit.details.impl.utils.navButtonColors
@@ -223,6 +224,7 @@ private fun HabitDetailsContentScreen(
             CalendarCard(
                 currentMonth = state.currentMonth,
                 completedDates = completedDates,
+                frequency = state.habit.frequency,
                 habitColor = habitColor,
                 today = today,
                 onPreviousMonth = {
@@ -313,6 +315,7 @@ private fun CalendarCard(
     modifier: Modifier = Modifier,
     currentMonth: YearMonth,
     completedDates: Set<LocalDate>,
+    frequency: HabitFrequency,
     habitColor: Color,
     today: LocalDate,
     onPreviousMonth: () -> Unit,
@@ -394,6 +397,7 @@ private fun CalendarCard(
             CalendarGrid(
                 month = currentMonth,
                 completedDates = completedDates,
+                frequency = frequency,
                 habitColor = habitColor,
                 today = today,
                 onDateToggle = onDateToggle
@@ -407,6 +411,7 @@ private fun CalendarGrid(
     modifier: Modifier = Modifier,
     month: YearMonth,
     completedDates: Set<LocalDate>,
+    frequency: HabitFrequency,
     habitColor: Color,
     today: LocalDate,
     onDateToggle: (LocalDate) -> Unit
@@ -433,6 +438,19 @@ private fun CalendarGrid(
                 CalendarDayCell(
                     date = date,
                     isCompleted = date in completedDates,
+                    isScheduledMissed = when (frequency) {
+                        is HabitFrequency.Weekly -> {
+                            date.dayOfWeek in frequency.daysOfWeek &&
+                                date <= today &&
+                                date !in completedDates
+                        }
+                        is HabitFrequency.Custom -> {
+                            date.day in frequency.daysOfMonth &&
+                                date <= today &&
+                                date !in completedDates
+                        }
+                        HabitFrequency.Daily -> false
+                    },
                     isToday = date == today,
                     isFuture = date > today,
                     habitColor = habitColor,
@@ -452,6 +470,7 @@ private fun CalendarDayCell(
     modifier: Modifier = Modifier,
     date: LocalDate,
     isCompleted: Boolean,
+    isScheduledMissed: Boolean,
     isToday: Boolean,
     isFuture: Boolean,
     habitColor: Color,
@@ -471,7 +490,7 @@ private fun CalendarDayCell(
                 }
             )
             .then(
-                if (isToday && !isCompleted) {
+                if (isCompleted || isScheduledMissed) {
                     Modifier.border(
                         HabitCardDefaults.borderWidth,
                         habitColor.copy(alpha = 0.5f),
@@ -492,12 +511,17 @@ private fun CalendarDayCell(
                 } else {
                     Color.White
                 }
+                isScheduledMissed -> habitColor
                 isToday -> habitColor
                 isFuture -> MaterialTheme.colorScheme.onSurfaceVariant
                 else -> MaterialTheme.colorScheme.onBackground
             },
             style = MaterialTheme.typography.labelMedium,
-            fontWeight = if (isToday || isCompleted) FontWeight.Bold else FontWeight.Normal,
+            fontWeight = if (isToday || isCompleted || isScheduledMissed) {
+                FontWeight.Bold
+            } else {
+                FontWeight.Normal
+            },
             textAlign = TextAlign.Center
         )
     }
