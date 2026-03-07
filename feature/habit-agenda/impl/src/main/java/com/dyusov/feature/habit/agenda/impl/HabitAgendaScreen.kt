@@ -123,17 +123,15 @@ fun HabitAgendaScreen(
             ) { habit ->
                 SwipeableHabitItem(
                     habit = habit,
-                    onHabitSwipe = {
+                    onHabitSwipe = { habitId ->
                         viewModel.processCommand(
-                            command = HabitAgendaCommand.ToggleHabitCompletion(habit.id)
+                            command = HabitAgendaCommand.ToggleHabitCompletion(habitId)
                         )
                     },
-                    onHabitClick = {
-                        onHabitClick(habit.id)
-                    },
-                    onLongHabitClick = {
+                    onHabitClick = onHabitClick,
+                    onLongHabitClick = { habitId ->
                         viewModel.processCommand(
-                            command = HabitAgendaCommand.DeleteHabit(habit.id)
+                            command = HabitAgendaCommand.DeleteHabit(habitId)
                         )
                     }
                 )
@@ -145,9 +143,9 @@ fun HabitAgendaScreen(
 @Composable
 fun SwipeableHabitItem(
     habit: Habit,
-    onHabitSwipe: () -> Unit,
-    onHabitClick: () -> Unit,
-    onLongHabitClick: () -> Unit
+    onHabitSwipe: (Long) -> Unit,
+    onHabitClick: (Long) -> Unit,
+    onLongHabitClick: (Long) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val dismissState = rememberSwipeToDismissBoxState(
@@ -176,7 +174,7 @@ fun SwipeableHabitItem(
         onDismiss = {
             coroutineScope.launch {
                 dismissState.reset()
-                onHabitSwipe()
+                onHabitSwipe(habit.id)
             }
         },
         backgroundContent = {
@@ -250,15 +248,19 @@ private fun ActionIcon(
 private fun HabitCardContent(
     modifier: Modifier = Modifier,
     habit: Habit,
-    onHabitClick: () -> Unit,
-    onLongHabitClick: () -> Unit
+    onHabitClick: (Long) -> Unit,
+    onLongHabitClick: (Long) -> Unit
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .combinedClickable(
-                onClick = onHabitClick,
-                onLongClick = onLongHabitClick
+                onClick = {
+                    onHabitClick(habit.id)
+                },
+                onLongClick = {
+                    onLongHabitClick(habit.id)
+                }
             ),
         shape = RoundedCornerShape(HabitCardDefaults.cornerRadius),
         colors = CardDefaults.cardColors(
