@@ -1,9 +1,7 @@
 package com.dyusov.core.domain.tracking
 
-import com.dyusov.core.common.datetime.DateTimeProvider
 import com.dyusov.core.common.utils.MyResult
 import com.dyusov.core.data.repo.HabitCompletionRepository
-import com.dyusov.core.data.repo.HabitRepository
 import com.dyusov.core.data.utils.toStartOfDayTimestamp
 import kotlinx.datetime.LocalDate
 import javax.inject.Inject
@@ -14,9 +12,7 @@ import javax.inject.Inject
  * - If there is no completion on that date, add a completion at the start of that day.
  */
 class ToggleHabitCompletionOnDateUseCase @Inject constructor(
-    private val habitRepository: HabitRepository,
     private val habitCompletionRepository: HabitCompletionRepository,
-    private val dateTimeProvider: DateTimeProvider
 ) {
     suspend operator fun invoke(habitId: Long, date: LocalDate) {
         val isCompleted = when (
@@ -33,10 +29,6 @@ class ToggleHabitCompletionOnDateUseCase @Inject constructor(
             habitCompletionRepository.deleteCompletionByDate(habitId, date)
         } else {
             habitCompletionRepository.addCompletion(habitId, date.toStartOfDayTimestamp())
-        }
-
-        if (date == dateTimeProvider.nowLocalDate()) {
-            habitRepository.toggleCompletedToday(habitId)
         }
     }
 }
