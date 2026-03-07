@@ -27,14 +27,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -99,8 +94,6 @@ fun HabitField(
     onValueChange: (String) -> Unit,
     minLines: Int = 1
 ) {
-    var isFocused by remember { mutableStateOf(false) }
-
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -110,10 +103,7 @@ fun HabitField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier
-                .fillMaxWidth()
-                .onFocusChanged {
-                    isFocused = it.isFocused
-                },
+                .fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             textStyle = TextStyle(
                 fontSize = 16.sp,
@@ -187,6 +177,7 @@ fun WeekdayPicker(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        Spacer(modifier = Modifier.height(1.dp))
         SectionLabel(text = stringResource(R.string.days_of_week))
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -204,11 +195,7 @@ fun WeekdayPicker(
                             } else {
                                 MaterialTheme.colorScheme.surface.copy(alpha = 0.3f)
                             },
-                            shape = if (isSelected) {
-                                RoundedCornerShape(16.dp)
-                            } else {
-                                RoundedCornerShape(24.dp)
-                            }
+                            shape = RoundedCornerShape(24.dp)
                         )
                         .border(
                             width = 0.75.dp,
@@ -217,18 +204,10 @@ fun WeekdayPicker(
                             } else {
                                 Color.Transparent
                             },
-                            shape = if (isSelected) {
-                                RoundedCornerShape(16.dp)
-                            } else {
-                                RoundedCornerShape(24.dp)
-                            }
+                            shape = RoundedCornerShape(24.dp)
                         )
                         .clip(
-                            shape = if (isSelected) {
-                                RoundedCornerShape(16.dp)
-                            } else {
-                                RoundedCornerShape(24.dp)
-                            }
+                            shape = RoundedCornerShape(24.dp)
                         )
                         .clickable {
                             onSelectToggle(day)
@@ -262,6 +241,7 @@ fun MonthDayPicker(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        Spacer(modifier = Modifier.height(1.dp))
         SectionLabel(text = stringResource(R.string.days_of_month))
         LazyVerticalGrid(
             columns = GridCells.Fixed(7),
@@ -284,11 +264,7 @@ fun MonthDayPicker(
                             } else {
                                 MaterialTheme.colorScheme.surface.copy(alpha = 0.3f)
                             },
-                            shape = if (isSelected) {
-                                RoundedCornerShape(16.dp)
-                            } else {
-                                RoundedCornerShape(24.dp)
-                            }
+                            shape = RoundedCornerShape(24.dp)
                         )
                         .border(
                             0.75.dp,
@@ -297,18 +273,10 @@ fun MonthDayPicker(
                             } else {
                                 Color.Transparent
                             },
-                            shape = if (isSelected) {
-                                RoundedCornerShape(16.dp)
-                            } else {
-                                RoundedCornerShape(24.dp)
-                            }
+                            shape = RoundedCornerShape(24.dp)
                         )
                         .clip(
-                            shape = if (isSelected) {
-                                RoundedCornerShape(16.dp)
-                            } else {
-                                RoundedCornerShape(24.dp)
-                            }
+                            shape = RoundedCornerShape(24.dp)
                         )
                         .clickable {
                             onSelectToggle(day)
