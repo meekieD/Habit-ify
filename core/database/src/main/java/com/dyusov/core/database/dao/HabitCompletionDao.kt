@@ -55,7 +55,7 @@ interface HabitCompletionDao {
         DELETE FROM habit_completions 
         WHERE habitId = :habitId 
         AND timestamp >= :startOfDay 
-        AND timestamp <= :endOfDay
+        AND timestamp < :endOfDay
     """
     )
     suspend fun deleteHabitCompletionsByDate(habitId: Long, startOfDay: Long, endOfDay: Long)

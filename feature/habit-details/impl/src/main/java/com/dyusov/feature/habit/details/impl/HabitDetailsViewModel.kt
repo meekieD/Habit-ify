@@ -121,9 +121,6 @@ class HabitDetailsViewModel @AssistedInject constructor(
                 .mapNotNull {
                     (it as? HabitDetailsState.Content)?.habit
                 }
-                .distinctUntilChangedBy {
-                    it.id
-                }
                 .flatMapLatest { habit ->
                     Log.d("HabitDetailsViewModel", "observeStreak: got habit=${habit.id}")
                     calculateStreakUseCase(habit)
