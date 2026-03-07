@@ -19,7 +19,6 @@ data class HabitDbModel(
     val id: Long,
     val name: String,
     val description: String?,
-    val isCompletedToday: Boolean,
     val frequencyType: FrequencyType,
     val weeklyDays: Set<DayOfWeek>?,
     val monthlyDays: Set<Int>?,

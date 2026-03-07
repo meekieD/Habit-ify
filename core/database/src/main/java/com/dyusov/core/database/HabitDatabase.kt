@@ -21,7 +21,7 @@ import com.dyusov.core.database.utils.HabitConverters
         HabitDbModel::class,
         HabitCompletionDbModel::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(HabitConverters::class, DateConverters::class)

@@ -37,7 +37,4 @@ interface HabitDao {
     @Transaction
     @Query("SELECT * FROM habits")
     fun getAllHabitsWithCompletions(): Flow<List<HabitWithCompletionsDbModel>>
-
-    @Query("UPDATE habits SET isCompletedToday = NOT isCompletedToday, updatedAt = :currentTime WHERE id = :habitId")
-    suspend fun toggleCompletedToday(habitId: Long, currentTime: Long = System.currentTimeMillis())
 }
