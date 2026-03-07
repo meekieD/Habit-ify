@@ -44,23 +44,20 @@ class HabitDetailsViewModel @AssistedInject constructor(
         fun create(@Assisted("habitId") habitId: Long): HabitDetailsViewModel
     }
 
-    private val _state = MutableStateFlow<HabitDetailsState>(
-        HabitDetailsState.Initial
-    )
-
+    private val _state = MutableStateFlow<HabitDetailsState>(HabitDetailsState.Initial)
     val state = _state.asStateFlow()
 
     private val _navigationEvent = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val navigationEvent = _navigationEvent.asSharedFlow()
 
+    private val _streakTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
     init {
-        Log.d("HabitDetailsViewModel", "init called with habitId=$habitId")
-        loadHabitDetails(YearMonth.now())
+        loadHabitDetails(month = YearMonth.now(), recalculateStreak = true)
         observeStreak()
     }
 
     fun processCommand(command: HabitDetailsCommand) {
-        Log.d("HabitDetailsViewModel", "processCommand: $command, current state: ${_state.value}")
         viewModelScope.launch {
             when (command) {
                 is HabitDetailsCommand.ToggleHabitCompletionOnDate -> {
@@ -70,12 +67,13 @@ class HabitDetailsViewModel @AssistedInject constructor(
                     )
                     loadHabitDetails(
                         month = (_state.value as? HabitDetailsState.Content)?.currentMonth
-                            ?: YearMonth.now()
+                            ?: YearMonth.now(),
+                        recalculateStreak = true
                     )
                 }
 
                 is HabitDetailsCommand.SetDisplayedMonth -> {
-                    loadHabitDetails(command.selectedMonth)
+                    loadHabitDetails(month = command.selectedMonth, recalculateStreak = false)
                 }
 
                 is HabitDetailsCommand.Back -> {
@@ -85,34 +83,30 @@ class HabitDetailsViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadHabitDetails(month: YearMonth) {
-        Log.d("HabitDetailsViewModel", "loadHabitDetails called for month=$month, habitId=$habitId")
+    private fun loadHabitDetails(month: YearMonth, recalculateStreak: Boolean) {
         viewModelScope.launch {
             getHabitWithCompletionsInPeriodUseCase(
                 habitId = habitId,
                 startTimestamp = month.toStartOfMonthTimestamp(),
                 endTimestamp = month.toEndOfMonthTimestamp()
             ).onSuccess { habitWithCompletions ->
-                Log.d(
-                    "HabitDetailsViewModel",
-                    "Got habit details SUCCESS: habitId=${habitWithCompletions.habit.id}, completionsCount=${habitWithCompletions.completions.size}"
-                )
+                val existingStreak = (_state.value as? HabitDetailsState.Content)?.currentStreak ?: 0
+
                 _state.update {
                     HabitDetailsState.Content(
                         habit = habitWithCompletions.habit,
                         completions = habitWithCompletions.completions,
-                        currentMonth = month
+                        currentMonth = month,
+                        currentStreak = existingStreak
                     )
                 }
-                Log.d("HabitDetailsViewModel", "State updated to Content")
-            }.onError { error ->
-                Log.e(
-                    "HabitDetailsViewModel",
-                    "Got ERROR while getting habit details with id=$habitId: $error"
-                )
-                _state.update {
-                    HabitDetailsState.Initial
+
+                if (recalculateStreak) {
+                    _streakTrigger.emit(Unit)
                 }
+            }.onError { error ->
+                Log.e("HabitDetailsViewModel", "Error loading habit id=$habitId: $error")
+                _state.update { HabitDetailsState.Initial }
             }
         }
     }
