@@ -109,8 +109,11 @@ private fun HabitDetailsContentScreen(
     modifier: Modifier = Modifier
 ) {
     val habitColor = Color(state.habit.color)
-    val isLightColor = habitColor.luminance() > 0.5f
-    val onHabitColor = if (isLightColor) Color(0xFF1C1B1F) else Color.White
+    val onHabitColor = if (habitColor.luminance() > 0.5f){
+        MaterialTheme.colorScheme.background
+    } else {
+        MaterialTheme.colorScheme.onBackground
+    }
 
     val completedDates: Set<LocalDate> = remember(state.completions) {
         state.completions.mapNotNull { completion ->
