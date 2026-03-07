@@ -67,11 +67,16 @@ sealed interface StreakCalculator {
                     .map { weekStart.plus(it.ordinal, DateTimeUnit.DAY) }
                     .filter { it <= today }
 
-                val isWeekComplete = requiredDatesInWeek.isNotEmpty() &&
-                        requiredDatesInWeek.all { it in completedDates }
+                if (requiredDatesInWeek.isEmpty()) {
+                    weekStart = weekStart.minus(1, DateTimeUnit.WEEK)
+                    continue
+                }
+
+                val isWeekComplete = requiredDatesInWeek.all { it in completedDates }
 
                 if (!isWeekComplete) break
-                streak++
+
+                streak += requiredDays.size
                 weekStart = weekStart.minus(1, DateTimeUnit.WEEK)
             }
             return streak
@@ -102,12 +107,16 @@ sealed interface StreakCalculator {
                     .map { LocalDate(month.year, month.month, it) }
                     .filter { it <= today }
 
-                val isMonthComplete = requiredDatesInMonth.isNotEmpty() &&
-                        requiredDatesInMonth.all { it in completedDates }
+                if (requiredDatesInMonth.isEmpty()) {
+                    month = month.minus(1)
+                    continue
+                }
+
+                val isMonthComplete = requiredDatesInMonth.all { it in completedDates }
 
                 if (!isMonthComplete) break
 
-                streak++
+                streak += requiredDays.size
 
                 month = month.minus(1)
             }
