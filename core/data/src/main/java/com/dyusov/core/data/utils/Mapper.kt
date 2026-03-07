@@ -32,7 +32,7 @@ fun HabitDbModel.toEntity(): Habit {
                 HabitColors.DEFAULT
             }
         } ?: HabitColors.DEFAULT,
-        isCompletedToday = isCompletedToday,
+        isCompletedToday = false,
         createdAt = createdAt,
         updatedAt = updatedAt
     )
@@ -43,7 +43,6 @@ fun Habit.toDbModel(): HabitDbModel {
         id = id,
         name = name,
         description = description,
-        isCompletedToday = isCompletedToday,
         frequencyType = frequency.toFrequencyType(),
         weeklyDays = frequency.getWeeklyDays(),
         monthlyDays = frequency.getMonthlyDays(),

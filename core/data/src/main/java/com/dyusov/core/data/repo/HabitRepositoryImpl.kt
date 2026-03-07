@@ -92,8 +92,4 @@ class HabitRepositoryImpl @Inject constructor(
     override suspend fun deleteHabit(habitId: Long) {
         habitDao.deleteHabit(habitId)
     }
-
-    override suspend fun toggleCompletedToday(habitId: Long) {
-        habitDao.toggleCompletedToday(habitId)
-    }
 }
