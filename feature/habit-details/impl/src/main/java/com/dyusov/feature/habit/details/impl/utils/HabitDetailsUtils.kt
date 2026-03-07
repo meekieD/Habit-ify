@@ -1,5 +1,9 @@
 package com.dyusov.feature.habit.details.impl.utils
 
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import com.dyusov.core.model.HabitFrequency
 
 fun frequencyLabel(frequency: HabitFrequency): String = when (frequency) {
@@ -27,3 +31,17 @@ fun ordinal(n: Int): String {
     }
     return "$n$suffix"
 }
+
+val surfaceIconColors: IconButtonColors
+    @Composable get() = IconButtonDefaults.filledTonalIconButtonColors(
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
+val navButtonColors: IconButtonColors
+    @Composable get() = IconButtonDefaults.filledTonalIconButtonColors(
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+    )

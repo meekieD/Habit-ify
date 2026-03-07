@@ -2,7 +2,6 @@
 
 package com.dyusov.feature.habit.details.impl
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,10 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ChevronLeft
@@ -33,7 +33,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -50,6 +49,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,6 +63,9 @@ import com.dyusov.core.common.datetime.plus
 import com.dyusov.core.common.datetime.toLocalDate
 import com.dyusov.core.ui.habit.HabitCardDefaults
 import com.dyusov.feature.habit.details.impl.utils.frequencyLabel
+import com.dyusov.feature.habit.details.impl.utils.navButtonColors
+import com.dyusov.feature.habit.details.impl.utils.surfaceIconColors
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 
@@ -79,7 +82,6 @@ fun HabitDetailsScreen(
     onEditHabit: (Long) -> Unit,
     onFinished: () -> Unit
 ) {
-    Log.d("HabitDetailsScreen", "Composed with habitId=$habitId")
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(key1 = Unit) {
@@ -94,7 +96,6 @@ fun HabitDetailsScreen(
             modifier = modifier,
             state = state as HabitDetailsState.Content,
             onCommand = viewModel::processCommand,
-            habitId = habitId,
             onEditHabit = onEditHabit
         )
     }
@@ -102,17 +103,20 @@ fun HabitDetailsScreen(
 
 @Composable
 private fun HabitDetailsContentScreen(
+    modifier: Modifier = Modifier,
     state: HabitDetailsState.Content,
     onCommand: (HabitDetailsCommand) -> Unit,
-    habitId: Long,
-    onEditHabit: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    onEditHabit: (Long) -> Unit
 ) {
-    val habitColor = Color(state.habit.color)
-    val onHabitColor = if (habitColor.luminance() > 0.5f){
-        MaterialTheme.colorScheme.background
-    } else {
-        MaterialTheme.colorScheme.onBackground
+    val habitColor = remember(state.habit.color) {
+        Color(state.habit.color)
+    }
+    val onHabitColor = remember(habitColor) {
+        if (habitColor.luminance() > 0.5f) {
+            Color.Black
+        } else {
+            Color.White
+        }
     }
 
     val completedDates: Set<LocalDate> = remember(state.completions) {
@@ -122,7 +126,6 @@ private fun HabitDetailsContentScreen(
             }.getOrNull()
         }.toSet()
     }
-
     val today = remember { LocalDate.nowClock() }
 
     Scaffold(
@@ -131,51 +134,36 @@ private fun HabitDetailsContentScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Details",
+                        text = stringResource(R.string.details),
                         fontSize = 24.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.onBackground
+                        fontWeight = FontWeight.ExtraBold
                     )
                 },
                 navigationIcon = {
                     FilledTonalIconButton(
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                        onClick = {
-                            onCommand(HabitDetailsCommand.Back)
-                        },
-                        colors = IconButtonDefaults.filledTonalIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        onClick = { onCommand(HabitDetailsCommand.Back) },
+                        colors = surfaceIconColors
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 },
                 actions = {
                     FilledTonalIconButton(
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                        onClick = {
-                            onEditHabit(habitId)
-                        },
-                        colors = IconButtonDefaults.filledTonalIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        onClick = { onEditHabit(state.habit.id) },
+                        colors = surfaceIconColors
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Edit,
-                            contentDescription = "Edit habit"
+                            contentDescription = stringResource(R.string.edit_habit)
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-                    actionIconContentColor = MaterialTheme.colorScheme.onSurface
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
     ) { innerPadding ->
@@ -183,17 +171,13 @@ private fun HabitDetailsContentScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
         ) {
-            // Habit Header
-            Column(
-                modifier = Modifier.padding(horizontal = 24.dp)
-            ) {
+            // Habit header
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
                 Spacer(Modifier.height(8.dp))
-                // Frequency badge
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier
+                        Modifier
                             .size(8.dp)
                             .background(habitColor, CircleShape)
                     )
@@ -206,9 +190,7 @@ private fun HabitDetailsContentScreen(
                         letterSpacing = 1.2.sp
                     )
                 }
-
                 Spacer(Modifier.height(4.dp))
-
                 Text(
                     text = state.habit.name,
                     color = MaterialTheme.colorScheme.onBackground,
@@ -217,7 +199,6 @@ private fun HabitDetailsContentScreen(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-
                 state.habit.description?.takeIf { it.isNotBlank() }?.let { desc ->
                     Spacer(Modifier.height(4.dp))
                     Text(
@@ -230,7 +211,6 @@ private fun HabitDetailsContentScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            // Streak Card
             StreakCard(
                 streak = state.currentStreak,
                 habitColor = habitColor,
@@ -240,19 +220,24 @@ private fun HabitDetailsContentScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // Calendar
             CalendarCard(
                 currentMonth = state.currentMonth,
                 completedDates = completedDates,
                 habitColor = habitColor,
                 today = today,
                 onPreviousMonth = {
-                    val prev = state.currentMonth.minus(1)
-                    onCommand(HabitDetailsCommand.SetDisplayedMonth(prev))
+                    onCommand(
+                        HabitDetailsCommand.SetDisplayedMonth(
+                            selectedMonth = state.currentMonth.minus(1)
+                        )
+                    )
                 },
                 onNextMonth = {
-                    val next = state.currentMonth.plus(1)
-                    onCommand(HabitDetailsCommand.SetDisplayedMonth(next))
+                    onCommand(
+                        HabitDetailsCommand.SetDisplayedMonth(
+                            selectedMonth = state.currentMonth.plus(1)
+                        )
+                    )
                 },
                 onDateToggle = { date ->
                     onCommand(HabitDetailsCommand.ToggleHabitCompletionOnDate(date))
@@ -266,10 +251,10 @@ private fun HabitDetailsContentScreen(
 
 @Composable
 private fun StreakCard(
+    modifier: Modifier = Modifier,
     streak: Int,
     habitColor: Color,
-    onHabitColor: Color,
-    modifier: Modifier = Modifier
+    onHabitColor: Color
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -285,7 +270,7 @@ private fun StreakCard(
         ) {
             Column {
                 Text(
-                    text = "Current Streak",
+                    text = stringResource(R.string.current_streak),
                     color = onHabitColor.copy(alpha = 0.5f),
                     style = MaterialTheme.typography.labelMedium,
                     letterSpacing = 0.8.sp
@@ -300,7 +285,11 @@ private fun StreakCard(
                     )
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        text = if (streak == 1) "day" else "days",
+                        text = if (streak == 1) {
+                            stringResource(R.string.day)
+                        } else {
+                            stringResource(R.string.days)
+                        },
                         color = onHabitColor.copy(alpha = 0.7f),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Medium,
@@ -310,7 +299,7 @@ private fun StreakCard(
             }
             Icon(
                 imageVector = Icons.Rounded.LocalFireDepartment,
-                contentDescription = "Streak fire icon",
+                contentDescription = stringResource(R.string.streak_fire_icon),
                 tint = onHabitColor.copy(alpha = if (streak > 0) 0.85f else 0.25f),
                 modifier = Modifier.size(64.dp)
             )
@@ -321,15 +310,17 @@ private fun StreakCard(
 
 @Composable
 private fun CalendarCard(
+    modifier: Modifier = Modifier,
     currentMonth: YearMonth,
     completedDates: Set<LocalDate>,
     habitColor: Color,
     today: LocalDate,
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit,
-    onDateToggle: (LocalDate) -> Unit,
-    modifier: Modifier = Modifier
+    onDateToggle: (LocalDate) -> Unit
 ) {
+    val canGoNext = currentMonth < YearMonth.now()
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
@@ -338,6 +329,7 @@ private fun CalendarCard(
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Month navigation header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -345,50 +337,37 @@ private fun CalendarCard(
             ) {
                 FilledTonalIconButton(
                     modifier = Modifier.size(32.dp),
-                    colors = IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                    ),
-                    onClick = {
-                        onPreviousMonth()
-                    }
+                    colors = navButtonColors,
+                    onClick = onPreviousMonth
                 ) {
                     Icon(
+                        modifier = Modifier.size(16.dp),
                         imageVector = Icons.Rounded.ChevronLeft,
-                        contentDescription = "Previous month",
-                        modifier = Modifier.size(16.dp)
+                        contentDescription = stringResource(R.string.previous_month)
                     )
                 }
 
                 Text(
-                    text = "${
-                        currentMonth.month.name.lowercase().replaceFirstChar { it.uppercase() }
-                    } ${currentMonth.year}",
+                    text = stringResource(
+                        R.string.month_label,
+                        currentMonth.month.name.lowercase().replaceFirstChar(Char::uppercaseChar),
+                        currentMonth.year
+                    ),
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
 
-                val canGoNext = currentMonth < YearMonth.now()
                 FilledTonalIconButton(
                     modifier = Modifier.size(32.dp),
                     enabled = canGoNext,
-                    colors = IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
-                    onClick = {
-                        if (canGoNext) {
-                            onNextMonth()
-                        }
-                    }
+                    colors = navButtonColors,
+                    onClick = onNextMonth
                 ) {
                     Icon(
+                        modifier = Modifier.size(16.dp),
                         imageVector = Icons.Rounded.ChevronRight,
-                        contentDescription = "Next month",
-                        modifier = Modifier.size(16.dp)
+                        contentDescription = stringResource(R.string.next_month)
                     )
                 }
             }
@@ -397,7 +376,7 @@ private fun CalendarCard(
 
             // Day-of-week headers
             Row(modifier = Modifier.fillMaxWidth()) {
-                listOf("M", "T", "W", "T", "F", "S", "S").forEach { label ->
+                DayOfWeek.entries.map { it.name[0].uppercase() }.forEach { label ->
                     Text(
                         text = label,
                         modifier = Modifier.weight(1f),
@@ -425,44 +404,44 @@ private fun CalendarCard(
 
 @Composable
 private fun CalendarGrid(
+    modifier: Modifier = Modifier,
     month: YearMonth,
     completedDates: Set<LocalDate>,
     habitColor: Color,
     today: LocalDate,
     onDateToggle: (LocalDate) -> Unit
 ) {
-    val firstDay = LocalDate(month.year, month.month, 1)
-    val startOffset = (firstDay.dayOfWeek.ordinal) % 7 // Mon=0 … Sun=6
-    val daysInMonth = month.numberOfDays
-
-    val cells = buildList {
-        repeat(startOffset) { add(null) }
-        for (day in 1..daysInMonth) {
-            add(LocalDate(month.year, month.month, day))
+    val cells = remember(month) {
+        val startOffset = LocalDate(month.year, month.month, 1).dayOfWeek.ordinal % 7
+        buildList {
+            repeat(startOffset) { add(null) }
+            for (day in 1..month.numberOfDays) {
+                add(LocalDate(month.year, month.month, day))
+            }
         }
-        while (size % 7 != 0) add(null)
     }
 
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        cells.chunked(7).forEach { week ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                week.forEach { date ->
-                    Box(modifier = Modifier.weight(1f)) {
-                        if (date != null) {
-                            CalendarDayCell(
-                                date = date,
-                                isCompleted = date in completedDates,
-                                isToday = date == today,
-                                isFuture = date > today,
-                                habitColor = habitColor,
-                                onClick = { onDateToggle(date) }
-                            )
-                        }
+    LazyVerticalGrid(
+        modifier = modifier,
+        columns = GridCells.Fixed(7),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        userScrollEnabled = false
+    ) {
+        items(cells) { date ->
+            if (date != null) {
+                CalendarDayCell(
+                    date = date,
+                    isCompleted = date in completedDates,
+                    isToday = date == today,
+                    isFuture = date > today,
+                    habitColor = habitColor,
+                    onClick = {
+                        onDateToggle(date)
                     }
-                }
+                )
+            } else {
+                Box(Modifier.aspectRatio(1f))
             }
         }
     }
@@ -470,6 +449,7 @@ private fun CalendarGrid(
 
 @Composable
 private fun CalendarDayCell(
+    modifier: Modifier = Modifier,
     date: LocalDate,
     isCompleted: Boolean,
     isToday: Boolean,
@@ -477,38 +457,44 @@ private fun CalendarDayCell(
     habitColor: Color,
     onClick: () -> Unit
 ) {
+    val cellShape = RoundedCornerShape(24.dp)
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
+        modifier = modifier
             .aspectRatio(1f)
-            .clip(RoundedCornerShape(24.dp))
+            .clip(cellShape)
             .background(
-                color = when {
+                when {
                     isCompleted -> habitColor
                     isToday -> habitColor.copy(alpha = 0.25f)
                     else -> Color.Transparent
                 }
             )
             .then(
-                if (isToday && !isCompleted) Modifier.border(
-                    width = HabitCardDefaults.borderWidth,
-                    color = habitColor.copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(24.dp)
-                ) else Modifier
+                if (isToday && !isCompleted) {
+                    Modifier.border(
+                        HabitCardDefaults.borderWidth,
+                        habitColor.copy(alpha = 0.5f),
+                        cellShape
+                    )
+                } else {
+                    Modifier
+                }
             )
-            .clickable(
-                enabled = !isFuture,
-                onClick = onClick
-            )
+            .clickable(enabled = !isFuture, onClick = onClick)
             .alpha(if (isFuture) 0.5f else 1f)
     ) {
         Text(
             text = date.day.toString(),
             color = when {
-                isCompleted -> if (habitColor.luminance() > 0.5f) MaterialTheme.colorScheme.onSurface else Color.White
+                isCompleted -> if (habitColor.luminance() > 0.5f) {
+                    MaterialTheme.colorScheme.onSurface
+                } else {
+                    Color.White
+                }
                 isToday -> habitColor
                 isFuture -> MaterialTheme.colorScheme.onSurfaceVariant
-                else ->  MaterialTheme.colorScheme.onBackground
+                else -> MaterialTheme.colorScheme.onBackground
             },
             style = MaterialTheme.typography.labelMedium,
             fontWeight = if (isToday || isCompleted) FontWeight.Bold else FontWeight.Normal,
