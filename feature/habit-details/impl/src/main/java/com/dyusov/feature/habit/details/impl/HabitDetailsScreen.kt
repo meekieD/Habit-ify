@@ -49,6 +49,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -129,6 +131,8 @@ private fun HabitDetailsContentScreen(
     }
     val today = remember { LocalDate.nowClock() }
 
+    val haptic = LocalHapticFeedback.current
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -143,7 +147,10 @@ private fun HabitDetailsContentScreen(
                 navigationIcon = {
                     FilledTonalIconButton(
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        onClick = { onCommand(HabitDetailsCommand.Back) },
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
+                            onCommand(HabitDetailsCommand.Back)
+                        },
                         colors = surfaceIconColors
                     ) {
                         Icon(
@@ -155,7 +162,10 @@ private fun HabitDetailsContentScreen(
                 actions = {
                     FilledTonalIconButton(
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        onClick = { onEditHabit(state.habit.id) },
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onEditHabit(state.habit.id)
+                        },
                         colors = surfaceIconColors
                     ) {
                         Icon(
@@ -479,6 +489,8 @@ private fun CalendarDayCell(
     onClick: () -> Unit
 ) {
     val cellShape = RoundedCornerShape(24.dp)
+    val haptic = LocalHapticFeedback.current
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -502,7 +514,10 @@ private fun CalendarDayCell(
                     Modifier
                 }
             )
-            .clickable(enabled = !isFuture, onClick = onClick)
+            .clickable(enabled = !isFuture) {
+                haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                onClick()
+            }
             .alpha(if (isFuture) 0.5f else 1f)
     ) {
         Text(
