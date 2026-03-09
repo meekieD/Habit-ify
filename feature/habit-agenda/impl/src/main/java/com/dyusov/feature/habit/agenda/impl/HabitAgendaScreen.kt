@@ -2,6 +2,7 @@
 
 package com.dyusov.feature.habit.agenda.impl
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -67,6 +68,7 @@ fun HabitAgendaScreen(
     onAddHabitClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val haptic = LocalHapticFeedback.current
 
     Scaffold(
         modifier = modifier,
@@ -85,7 +87,10 @@ fun HabitAgendaScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onAddHabitClick,
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
+                    onAddHabitClick()
+                },
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 containerColor = MaterialTheme.colorScheme.primary,
                 shape = CircleShape,
@@ -186,7 +191,10 @@ fun SwipeableHabitItem(
         content = {
             HabitCardContent(
                 habit = habit,
-                onHabitClick = onHabitClick,
+                onHabitClick = { habitId ->
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    onHabitClick(habitId)
+                },
                 onLongHabitClick = onLongHabitClick
             )
         }
