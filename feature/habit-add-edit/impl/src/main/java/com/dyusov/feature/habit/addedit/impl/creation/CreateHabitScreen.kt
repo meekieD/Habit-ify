@@ -34,6 +34,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -66,6 +68,7 @@ fun CreateHabitScreen(
 
     when (val currentState = state) {
         is CreateHabitState.Creation -> {
+            val haptic = LocalHapticFeedback.current
             Scaffold(
                 modifier = modifier,
                 topBar = {
@@ -82,6 +85,7 @@ fun CreateHabitScreen(
                             FilledTonalIconButton(
                                 modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                                 onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                                     viewModel.processCommand(CreateHabitCommand.Back)
                                 },
                                 colors = IconButtonDefaults.filledTonalIconButtonColors(

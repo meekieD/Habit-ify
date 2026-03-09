@@ -35,6 +35,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -73,6 +75,7 @@ fun EditHabitScreen(
     when (val currentState = state) {
         EditHabitState.Initial -> {}
         is EditHabitState.Editing -> {
+            val haptic = LocalHapticFeedback.current
             Scaffold(
                 modifier = modifier,
                 topBar = {
@@ -89,6 +92,7 @@ fun EditHabitScreen(
                             FilledTonalIconButton(
                                 modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                                 onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                                     viewModel.processCommand(EditHabitCommand.Back)
                                 },
                                 colors = IconButtonDefaults.filledTonalIconButtonColors(
@@ -106,6 +110,7 @@ fun EditHabitScreen(
                             FilledTonalIconButton(
                                 modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                                 onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     viewModel.processCommand(EditHabitCommand.Delete)
                                 },
                                 colors = IconButtonDefaults.filledTonalIconButtonColors(

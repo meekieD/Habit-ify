@@ -31,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -48,8 +50,13 @@ fun SaveHabitButton(
     onClick: () -> Unit,
     enabled: Boolean
 ) {
+    val haptic = LocalHapticFeedback.current
+
     Button(
-        onClick = onClick,
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            onClick()
+        },
         enabled = enabled,
         modifier = modifier
             .fillMaxWidth()
@@ -135,6 +142,8 @@ fun FrequencySelector(
     selected: FrequencyType,
     onSelect: (FrequencyType) -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
+
     SectionLabel(text = stringResource(R.string.frequency))
     SingleChoiceSegmentedButtonRow(
         modifier = modifier.fillMaxWidth()
@@ -152,6 +161,7 @@ fun FrequencySelector(
                     count = HabitScreenUtils.frequencySelectorOptions.size
                 ),
                 onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
                     onSelect(type)
                 },
                 selected = isSelected,
@@ -173,6 +183,8 @@ fun WeekdayPicker(
     selectedDays: Set<DayOfWeek>,
     onSelectToggle: (DayOfWeek) -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
+
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -210,6 +222,7 @@ fun WeekdayPicker(
                             shape = RoundedCornerShape(24.dp)
                         )
                         .clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
                             onSelectToggle(day)
                         },
                     contentAlignment = Alignment.Center
@@ -237,6 +250,8 @@ fun MonthDayPicker(
     selectedDays: Set<Int>,
     onSelectToggle: (Int) -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -279,6 +294,7 @@ fun MonthDayPicker(
                             shape = RoundedCornerShape(24.dp)
                         )
                         .clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
                             onSelectToggle(day)
                         },
                     contentAlignment = Alignment.Center
@@ -307,6 +323,8 @@ fun ColorPicker(
     colors: List<Int>,
     onSelect: (Int) -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -331,6 +349,7 @@ fun ColorPicker(
                         )
                         .clip(CircleShape)
                         .clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
                             onSelect(colorInt)
                         },
                     contentAlignment = Alignment.Center
