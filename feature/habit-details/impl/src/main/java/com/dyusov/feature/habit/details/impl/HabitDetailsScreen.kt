@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -38,6 +39,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -122,8 +124,8 @@ private fun HabitDetailsContentScreen(
         }
     }
 
-    val completedDates: Set<LocalDate> = remember(state.completions) {
-        state.completions.mapNotNull { completion ->
+    val completedDates: Set<LocalDate> = remember(state.monthCompletions) {
+        state.monthCompletions.mapNotNull { completion ->
             runCatching {
                 completion.timestamp.toLocalDate()
             }.getOrNull()
@@ -255,6 +257,16 @@ private fun HabitDetailsContentScreen(
                     onCommand(HabitDetailsCommand.ToggleHabitCompletionOnDate(date))
                 },
                 modifier = Modifier.padding(horizontal = 24.dp)
+            )
+
+            Spacer(Modifier.height(24.dp))
+
+            StatsCard(
+                modifier = Modifier.padding(horizontal = 24.dp),
+                totalCompletions = state.totalCompletions,
+                successRate = state.successRate,
+                bestStreak = state.bestStreak,
+                habitColor = habitColor
             )
         }
     }
@@ -451,14 +463,16 @@ private fun CalendarGrid(
                     isScheduledMissed = when (frequency) {
                         is HabitFrequency.Weekly -> {
                             date.dayOfWeek in frequency.daysOfWeek &&
-                                date <= today &&
-                                date !in completedDates
+                                    date <= today &&
+                                    date !in completedDates
                         }
+
                         is HabitFrequency.Custom -> {
                             date.day in frequency.daysOfMonth &&
-                                date <= today &&
-                                date !in completedDates
+                                    date <= today &&
+                                    date !in completedDates
                         }
+
                         HabitFrequency.Daily -> {
                             date <= today && date !in completedDates
                         }
@@ -528,6 +542,7 @@ private fun CalendarDayCell(
                 } else {
                     Color.White
                 }
+
                 isScheduledMissed -> habitColor
                 isToday -> habitColor
                 isFuture -> MaterialTheme.colorScheme.onSurfaceVariant
@@ -540,6 +555,95 @@ private fun CalendarDayCell(
                 FontWeight.Normal
             },
             textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun StatsCard(
+    modifier: Modifier = Modifier,
+    totalCompletions: Int,
+    successRate: Float,
+    bestStreak: Int,
+    habitColor: Color
+) {
+    Card(
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        ),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                StatItem(
+                    modifier = Modifier.weight(1f),
+                    label = stringResource(R.string.total),
+                    value = totalCompletions.toString(),
+                    habitColor = habitColor
+                )
+
+                VerticalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                )
+
+                StatItem(
+                    modifier = Modifier.weight(1f),
+                    label = stringResource(R.string.success),
+                    value = "${(successRate * 100).toInt()}%",
+                    habitColor = habitColor
+                )
+
+                VerticalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                )
+
+                StatItem(
+                    modifier = Modifier.weight(1f),
+                    label = stringResource(R.string.best),
+                    value = bestStreak.toString(),
+                    habitColor = habitColor
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun StatItem(
+    modifier: Modifier = Modifier,
+    label: String,
+    value: String,
+    habitColor: Color
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.ExtraBold,
+            color = habitColor
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall.copy(
+                letterSpacing = 1.2.sp
+            ),
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
         )
     }
 }
