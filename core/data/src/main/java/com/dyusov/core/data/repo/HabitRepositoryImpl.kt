@@ -1,5 +1,6 @@
 package com.dyusov.core.data.repo
 
+import androidx.room.util.copy
 import com.dyusov.core.common.utils.MyError
 import com.dyusov.core.common.utils.MyResult
 import com.dyusov.core.data.utils.throwCancellationExceptionAndGeneralError
@@ -30,24 +31,6 @@ class HabitRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getHabitWithCompletionsInPeriod(
-        habitId: Long,
-        startTimestamp: Long,
-        endTimestamp: Long
-    ): MyResult<HabitWithCompletions, MyError> {
-        return try {
-            val entity = habitDao.getHabitWithCompletions(habitId).toEntity()
-            val filteredEntity = entity.copy(
-                completions = entity.completions.filter { completion ->
-                    completion.timestamp in startTimestamp..endTimestamp
-                }
-            )
-            MyResult.Success(filteredEntity)
-        } catch (_: Exception) {
-            throwCancellationExceptionAndGeneralError()
-        }
-    }
-
     override fun getAllHabitsWithCompletionsInPeriod(
         startTimestamp: Long,
         endTimestamp: Long
@@ -73,11 +56,9 @@ class HabitRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getHabitWithCompletions(habitId: Long): MyResult<HabitWithCompletions, MyError> {
-        return try {
-            MyResult.Success(habitDao.getHabitWithCompletions(habitId).toEntity())
-        } catch (_: Exception) {
-            throwCancellationExceptionAndGeneralError()
+    override suspend fun getHabitWithCompletions(habitId: Long): Flow<MyResult<HabitWithCompletions, MyError>> {
+        return habitDao.getHabitWithCompletions(habitId).map { dbModel ->
+            MyResult.Success(dbModel.toEntity())
         }
     }
 
