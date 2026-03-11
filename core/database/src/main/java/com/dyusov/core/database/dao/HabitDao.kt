@@ -32,7 +32,7 @@ interface HabitDao {
 
     @Transaction
     @Query("SELECT * FROM habits WHERE id = :habitId")
-    suspend fun getHabitWithCompletions(habitId: Long): HabitWithCompletionsDbModel
+    fun getHabitWithCompletions(habitId: Long): Flow<HabitWithCompletionsDbModel>
 
     @Transaction
     @Query("SELECT * FROM habits")
