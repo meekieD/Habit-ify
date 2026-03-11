@@ -3,6 +3,7 @@ package com.dyusov.core.domain.streak
 import com.dyusov.core.common.datetime.DateTimeProvider
 import com.dyusov.core.common.datetime.minus
 import com.dyusov.core.common.datetime.now
+import com.dyusov.core.common.datetime.plus
 import com.dyusov.core.common.datetime.startOfWeek
 import com.dyusov.core.model.Habit
 import com.dyusov.core.model.HabitFrequency
@@ -15,11 +16,8 @@ import kotlinx.datetime.plus
 import javax.inject.Inject
 
 sealed interface StreakCalculator {
-    fun calculate(
-        completedDates: Set<LocalDate>,
-        habit: Habit,
-        timeZone: TimeZone
-    ): Int
+    fun calculate(completedDates: Set<LocalDate>, habit: Habit, timeZone: TimeZone): Int
+    fun calculateBest(completedDates: Set<LocalDate>, habit: Habit, timeZone: TimeZone): Int
 
     class DailyStreakCalculator @Inject constructor(
         private val dateTimeProvider: DateTimeProvider
@@ -41,6 +39,28 @@ sealed interface StreakCalculator {
             }
 
             return streak
+        }
+
+        override fun calculateBest(
+            completedDates: Set<LocalDate>,
+            habit: Habit,
+            timeZone: TimeZone
+        ): Int {
+            if (completedDates.isEmpty()) {
+                return 0
+            }
+
+            val sorted = completedDates.sorted()
+            var best = 1
+            var current = 1
+
+            for (i in 1 until sorted.size) {
+                current =
+                    if (sorted[i] == sorted[i - 1].plus(1, DateTimeUnit.DAY)) current + 1 else 1
+                if (current > best) best = current
+            }
+
+            return best
         }
     }
 
@@ -72,14 +92,46 @@ sealed interface StreakCalculator {
                     continue
                 }
 
-                val isWeekComplete = requiredDatesInWeek.all { it in completedDates }
-
-                if (!isWeekComplete) break
+                if (!requiredDatesInWeek.all { it in completedDates }) break
 
                 streak += requiredDays.size
                 weekStart = weekStart.minus(1, DateTimeUnit.WEEK)
             }
             return streak
+        }
+
+        override fun calculateBest(
+            completedDates: Set<LocalDate>,
+            habit: Habit,
+            timeZone: TimeZone
+        ): Int {
+            val frequency = habit.frequency as? HabitFrequency.Weekly ?: return 0
+            val requiredDays = frequency.daysOfWeek
+            if (requiredDays.isEmpty() || completedDates.isEmpty()) return 0
+
+            val firstDate = completedDates.min()
+            var weekStart = firstDate.startOfWeek()
+            val today = dateTimeProvider.nowLocalDate()
+
+            var best = 0
+            var current = 0
+
+            while (weekStart <= today) {
+                val requiredDatesInWeek = requiredDays
+                    .map { weekStart.plus(it.ordinal, DateTimeUnit.DAY) }
+                    .filter { it <= today }
+
+                if (requiredDatesInWeek.isNotEmpty()) {
+                    if (requiredDatesInWeek.all { it in completedDates }) {
+                        current += requiredDays.size
+                        if (current > best) best = current
+                    } else {
+                        current = 0
+                    }
+                }
+                weekStart = weekStart.plus(1, DateTimeUnit.WEEK)
+            }
+            return best
         }
     }
 
@@ -112,15 +164,49 @@ sealed interface StreakCalculator {
                     continue
                 }
 
-                val isMonthComplete = requiredDatesInMonth.all { it in completedDates }
-
-                if (!isMonthComplete) break
+                if (!requiredDatesInMonth.all { it in completedDates }) break
 
                 streak += requiredDays.size
 
                 month = month.minus(1)
             }
             return streak
+        }
+
+        override fun calculateBest(
+            completedDates: Set<LocalDate>,
+            habit: Habit,
+            timeZone: TimeZone
+        ): Int {
+            val frequency = habit.frequency as? HabitFrequency.Custom ?: return 0
+            val requiredDays = frequency.daysOfMonth
+            if (requiredDays.isEmpty() || completedDates.isEmpty()) return 0
+
+            val firstDate = completedDates.min()
+            var month = YearMonth(firstDate.year, firstDate.month)
+            val today = dateTimeProvider.nowLocalDate()
+            val currentMonth = YearMonth.now(timeZone)
+
+            var best = 0
+            var current = 0
+
+            while (month <= currentMonth) {
+                val requiredDatesInMonth = requiredDays
+                    .filter { it <= month.numberOfDays }
+                    .map { LocalDate(month.year, month.month, it) }
+                    .filter { it <= today }
+
+                if (requiredDatesInMonth.isNotEmpty()) {
+                    if (requiredDatesInMonth.all { it in completedDates }) {
+                        current += requiredDays.size
+                        if (current > best) best = current
+                    } else {
+                        current = 0
+                    }
+                }
+                month = month.plus(1)
+            }
+            return best
         }
     }
 }

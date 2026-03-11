@@ -19,7 +19,7 @@ class CalculateStreakUseCase @Inject constructor(
     private val monthlyStreakCalculator: StreakCalculator.MonthlyStreakCalculator,
     private val dateTimeProvider: DateTimeProvider
 ) {
-    operator fun invoke(habit: Habit): Flow<MyResult<Int, MyError>> {
+    operator fun invoke(habit: Habit): Flow<MyResult<StreakResult, MyError>> {
         return habitCompletionRepository.getCompletionsByHabitId(habit.id)
             .map { result ->
                 result.map { completions ->
@@ -33,10 +33,17 @@ class CalculateStreakUseCase @Inject constructor(
                         is HabitFrequency.Custom -> monthlyStreakCalculator
                     }
 
-                    calculator.calculate(
-                        completedDates = completedDates,
-                        habit = habit,
-                        timeZone = dateTimeProvider.timeZone()
+                    StreakResult(
+                        current = calculator.calculate(
+                            completedDates = completedDates,
+                            habit = habit,
+                            timeZone = dateTimeProvider.timeZone()
+                        ),
+                        best = calculator.calculateBest(
+                            completedDates = completedDates,
+                            habit = habit,
+                            timeZone = dateTimeProvider.timeZone()
+                        )
                     )
                 }
             }
