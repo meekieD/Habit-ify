@@ -259,7 +259,7 @@ private fun HabitDetailsContentScreen(
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(16.dp))
 
             StatsCard(
                 modifier = Modifier.padding(horizontal = 24.dp),
@@ -570,7 +570,7 @@ fun StatsCard(
     Card(
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         ),
         modifier = modifier.fillMaxWidth()
     ) {
