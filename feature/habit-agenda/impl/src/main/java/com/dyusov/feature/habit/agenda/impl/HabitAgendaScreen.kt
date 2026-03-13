@@ -18,9 +18,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.AddCircle
+import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -86,7 +89,7 @@ fun HabitAgendaScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
+            ExtendedFloatingActionButton(
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                     onAddHabitClick()
@@ -94,11 +97,14 @@ fun HabitAgendaScreen(
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 containerColor = MaterialTheme.colorScheme.primary,
                 shape = CircleShape,
-                content = {
+                icon = {
                     Icon(
                         imageVector = Icons.Filled.Add,
                         contentDescription = "Add habit"
                     )
+                },
+                text = {
+                    Text(text = stringResource(R.string.new_habit))
                 }
             )
         }
