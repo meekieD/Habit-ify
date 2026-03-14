@@ -2,6 +2,16 @@
 
 package com.dyusov.feature.habit.details.impl
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -44,7 +54,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -280,6 +293,12 @@ private fun StreakCard(
     habitColor: Color,
     onHabitColor: Color
 ) {
+    var previousStreak by remember { mutableIntStateOf(streak) }
+    var isIncreasing by remember { mutableStateOf(true) }
+
+    LaunchedEffect(streak) {
+        isIncreasing = streak >= previousStreak
+    }
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
@@ -301,12 +320,28 @@ private fun StreakCard(
                 )
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.Bottom) {
-                    Text(
-                        text = "$streak",
-                        color = onHabitColor,
-                        style = MaterialTheme.typography.displayMedium,
-                        fontWeight = FontWeight.ExtraBold
-                    )
+                    AnimatedContent(
+                        targetState = streak,
+                        transitionSpec = {
+                            val slideIn = if (isIncreasing) 1 else -1
+                            slideInVertically(
+                                animationSpec = tween(300, easing = FastOutSlowInEasing),
+                                initialOffsetY = { it * slideIn }
+                            ) + fadeIn(tween(200)) togetherWith
+                                    slideOutVertically(
+                                        animationSpec = tween(300, easing = FastOutSlowInEasing),
+                                        targetOffsetY = { -it * slideIn }
+                                    ) + fadeOut(tween(200))
+                        }
+                    ) { displayedStreakValue ->
+                        Text(
+                            text = "$displayedStreakValue",
+                            color = onHabitColor,
+                            style = MaterialTheme.typography.displayMedium,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+
                     Spacer(Modifier.width(6.dp))
                     Text(
                         text = if (streak == 1) {
@@ -346,6 +381,13 @@ private fun CalendarCard(
 ) {
     val canGoNext = currentMonth < YearMonth.now()
 
+    var slideDirection by remember { mutableIntStateOf(1) }
+    var previousMonth by remember { mutableStateOf(currentMonth) }
+
+    LaunchedEffect(currentMonth) {
+        slideDirection = if (currentMonth > previousMonth) 1 else -1
+    }
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
@@ -372,16 +414,31 @@ private fun CalendarCard(
                     )
                 }
 
-                Text(
-                    text = stringResource(
-                        R.string.month_label,
-                        currentMonth.month.name.lowercase().replaceFirstChar(Char::uppercaseChar),
-                        currentMonth.year
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
+                AnimatedContent(
+                    targetState = currentMonth,
+                    transitionSpec = {
+                        val direction = slideDirection
+                        slideInHorizontally(
+                            animationSpec = tween(300, easing = FastOutSlowInEasing),
+                            initialOffsetX = { it * direction }
+                        ) + fadeIn(tween(300)) togetherWith
+                                slideOutHorizontally(
+                                    animationSpec = tween(300, easing = FastOutSlowInEasing),
+                                    targetOffsetX = { -it * direction }
+                                ) + fadeOut(tween(300))
+                    }
+                ) { month ->
+                    Text(
+                        text = stringResource(
+                            R.string.month_label,
+                            month.month.name.lowercase().replaceFirstChar(Char::uppercaseChar),
+                            month.year
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
 
                 FilledTonalIconButton(
                     modifier = Modifier.size(32.dp),
@@ -416,14 +473,29 @@ private fun CalendarCard(
 
             Spacer(Modifier.height(8.dp))
 
-            CalendarGrid(
-                month = currentMonth,
-                completedDates = completedDates,
-                frequency = frequency,
-                habitColor = habitColor,
-                today = today,
-                onDateToggle = onDateToggle
-            )
+            AnimatedContent(
+                targetState = currentMonth,
+                transitionSpec = {
+                    val direction = slideDirection
+                    slideInHorizontally(
+                        animationSpec = tween(300, easing = FastOutSlowInEasing),
+                        initialOffsetX = { it * direction }
+                    ) + fadeIn(tween(300)) togetherWith
+                            slideOutHorizontally(
+                                animationSpec = tween(300, easing = FastOutSlowInEasing),
+                                targetOffsetX = { -it * direction }
+                            ) + fadeOut(tween(300))
+                }
+            ) { month ->
+                CalendarGrid(
+                    month = month,
+                    completedDates = completedDates,
+                    frequency = frequency,
+                    habitColor = habitColor,
+                    today = today,
+                    onDateToggle = onDateToggle
+                )
+            }
         }
     }
 }
@@ -628,16 +700,45 @@ fun StatItem(
     value: String,
     habitColor: Color
 ) {
+    var previousValue by remember { mutableStateOf(value) }
+    var isIncreasing by remember { mutableStateOf(true) }
+
+    LaunchedEffect(value) {
+        val previous = previousValue.filter { it.isDigit() }.toIntOrNull() ?: 0
+        val current = value.filter { it.isDigit() }.toIntOrNull() ?: 0
+        isIncreasing = current >= previous
+    }
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.ExtraBold,
-            color = habitColor
-        )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.clip(RoundedCornerShape(4.dp))
+        ) {
+            AnimatedContent(
+                targetState = value,
+                transitionSpec = {
+                    val slideIn = if (isIncreasing) 1 else -1
+                    slideInVertically(
+                        animationSpec = tween(300, easing = FastOutSlowInEasing),
+                        initialOffsetY = { it * slideIn }
+                    ) + fadeIn(tween(200)) togetherWith
+                            slideOutVertically(
+                                animationSpec = tween(300, easing = FastOutSlowInEasing),
+                                targetOffsetY = { -it * slideIn }
+                            ) + fadeOut(tween(200))
+                }
+            ) { displayValue ->
+                Text(
+                    text = displayValue,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = habitColor
+                )
+            }
+        }
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall.copy(
