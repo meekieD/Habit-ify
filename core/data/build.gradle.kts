@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
 
     implementation(libs.hilt.android)
+    implementation(libs.room.ktx)
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.dagger.hilt.android.compiler)
 
