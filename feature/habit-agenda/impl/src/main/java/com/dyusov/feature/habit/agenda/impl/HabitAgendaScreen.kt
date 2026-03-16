@@ -2,10 +2,10 @@
 
 package com.dyusov.feature.habit.agenda.impl
 
-import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,13 +18,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.AddCircle
-import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -278,7 +275,7 @@ private fun HabitCardContent(
             ),
         shape = RoundedCornerShape(HabitCardDefaults.cornerRadius),
         colors = CardDefaults.cardColors(
-            containerColor = Color(habit.color.toPastel())
+            containerColor = Color(habit.color.toPastel(darkTheme = isSystemInDarkTheme()))
         ),
         border = if (habit.isCompletedToday) {
             BorderStroke(HabitCardDefaults.borderWidth, Color(habit.color))
@@ -294,7 +291,7 @@ private fun HabitCardContent(
                     horizontal = HabitCardDefaults.horizontalPadding
                 ),
             text = habit.name,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 16.sp,
             fontWeight = FontWeight.ExtraBold,
             maxLines = 1,
