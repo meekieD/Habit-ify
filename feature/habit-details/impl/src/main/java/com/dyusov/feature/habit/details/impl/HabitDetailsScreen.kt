@@ -2,6 +2,8 @@
 
 package com.dyusov.feature.habit.details.impl
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -15,6 +17,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -78,8 +81,11 @@ import com.dyusov.core.common.datetime.now
 import com.dyusov.core.common.datetime.nowClock
 import com.dyusov.core.common.datetime.plus
 import com.dyusov.core.common.datetime.toLocalDate
+import com.dyusov.core.designsystem.ThemeMode
+import com.dyusov.core.designsystem.ThemeViewModel
 import com.dyusov.core.model.HabitFrequency
 import com.dyusov.core.ui.habit.HabitCardDefaults
+import com.dyusov.core.ui.utils.toPastel
 import com.dyusov.feature.habit.details.impl.utils.frequencyLabel
 import com.dyusov.feature.habit.details.impl.utils.navButtonColors
 import com.dyusov.feature.habit.details.impl.utils.surfaceIconColors
@@ -97,9 +103,17 @@ fun HabitDetailsScreen(
             factory.create(habitId)
         },
     ),
+    themeViewModel: ThemeViewModel = hiltViewModel(LocalActivity.current as ComponentActivity),
     onEditHabit: (Long) -> Unit,
     onFinished: () -> Unit
 ) {
+    val themeMode by themeViewModel.themeMode.collectAsState()
+    val isDark = when (themeMode) {
+        ThemeMode.DARK -> true
+        ThemeMode.LIGHT -> false
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    }
+
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(key1 = Unit) {
@@ -114,7 +128,8 @@ fun HabitDetailsScreen(
             modifier = modifier,
             state = state as HabitDetailsState.Content,
             onCommand = viewModel::processCommand,
-            onEditHabit = onEditHabit
+            onEditHabit = onEditHabit,
+            isDark = isDark
         )
     }
 }
@@ -124,10 +139,15 @@ private fun HabitDetailsContentScreen(
     modifier: Modifier = Modifier,
     state: HabitDetailsState.Content,
     onCommand: (HabitDetailsCommand) -> Unit,
-    onEditHabit: (Long) -> Unit
+    onEditHabit: (Long) -> Unit,
+    isDark: Boolean
 ) {
     val habitColor = remember(state.habit.color) {
-        Color(state.habit.color)
+        if (isDark) {
+            Color(state.habit.color.toPastel(darkTheme = true))
+        } else {
+            Color(state.habit.color)
+        }
     }
     val onHabitColor = remember(habitColor) {
         if (habitColor.luminance() > 0.5f) {
@@ -239,9 +259,9 @@ private fun HabitDetailsContentScreen(
 
             StreakCard(
                 streak = state.currentStreak,
-                habitColor = habitColor,
+                habitColor = if (isDark) habitColor.copy(alpha = 0.7f) else habitColor,
                 onHabitColor = onHabitColor,
-                modifier = Modifier.padding(horizontal = 24.dp)
+                modifier = Modifier.padding(horizontal = 24.dp),
             )
 
             Spacer(Modifier.height(24.dp))
@@ -250,7 +270,7 @@ private fun HabitDetailsContentScreen(
                 currentMonth = state.currentMonth,
                 completedDates = completedDates,
                 frequency = state.habit.frequency,
-                habitColor = habitColor,
+                habitColor = if (isDark) habitColor.copy(alpha = 0.7f) else habitColor,
                 today = today,
                 onPreviousMonth = {
                     onCommand(
