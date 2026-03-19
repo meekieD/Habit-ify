@@ -3,4 +3,6 @@
     <string name="your_habits">Your habits</string>
     <string name="swipe_to_mark_done_or_reset">Swipe to mark done or reset</string>
     <string name="new_habit">New</string>
+    <string name="appearance">Appearance</string>
+    <string name="choose_how_habitify_looks">Choose how Habitify looks</string>
 </resources>
