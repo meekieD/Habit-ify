@@ -143,11 +143,7 @@ private fun HabitDetailsContentScreen(
     isDark: Boolean
 ) {
     val habitColor = remember(state.habit.color) {
-        if (isDark) {
-            Color(state.habit.color.toPastel(darkTheme = true))
-        } else {
-            Color(state.habit.color)
-        }
+        Color(state.habit.color)
     }
     val onHabitColor = remember(habitColor) {
         if (habitColor.luminance() > 0.5f) {
@@ -259,7 +255,7 @@ private fun HabitDetailsContentScreen(
 
             StreakCard(
                 streak = state.currentStreak,
-                habitColor = if (isDark) habitColor.copy(alpha = 0.7f) else habitColor,
+                habitColor = if (isDark) habitColor.copy(alpha = 0.5f) else habitColor,
                 onHabitColor = onHabitColor,
                 modifier = Modifier.padding(horizontal = 24.dp),
             )
@@ -270,7 +266,7 @@ private fun HabitDetailsContentScreen(
                 currentMonth = state.currentMonth,
                 completedDates = completedDates,
                 frequency = state.habit.frequency,
-                habitColor = if (isDark) habitColor.copy(alpha = 0.7f) else habitColor,
+                habitColor = if (isDark) habitColor.copy(alpha = 0.5f) else habitColor,
                 today = today,
                 onPreviousMonth = {
                     onCommand(
