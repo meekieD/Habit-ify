@@ -608,7 +608,7 @@ private fun CalendarDayCell(
                 }
             )
             .then(
-                if (isCompleted || isScheduledMissed) {
+                if (isScheduledMissed) {
                     Modifier.border(
                         HabitCardDefaults.borderWidth,
                         habitColor.copy(alpha = 0.5f),
