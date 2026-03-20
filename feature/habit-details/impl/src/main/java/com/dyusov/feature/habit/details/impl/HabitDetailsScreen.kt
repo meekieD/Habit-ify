@@ -255,7 +255,7 @@ private fun HabitDetailsContentScreen(
 
             StreakCard(
                 streak = state.currentStreak,
-                habitColor = if (isDark) habitColor.copy(alpha = 0.5f) else habitColor,
+                habitColor = if (isDark) habitColor.copy(alpha = 0.7f) else habitColor,
                 onHabitColor = onHabitColor,
                 modifier = Modifier.padding(horizontal = 24.dp),
             )
@@ -266,7 +266,7 @@ private fun HabitDetailsContentScreen(
                 currentMonth = state.currentMonth,
                 completedDates = completedDates,
                 frequency = state.habit.frequency,
-                habitColor = if (isDark) habitColor.copy(alpha = 0.5f) else habitColor,
+                habitColor = if (isDark) habitColor.copy(alpha = 0.7f) else habitColor,
                 today = today,
                 onPreviousMonth = {
                     onCommand(
