@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -148,7 +149,9 @@ fun FrequencySelector(
     SingleChoiceSegmentedButtonRow(
         modifier = modifier.fillMaxWidth()
     ) {
-        HabitScreenUtils.frequencySelectorOptions.forEachIndexed { index, (type, label) ->
+        HabitScreenUtils.frequencySelectorOptions
+            .map { (type, resId) -> type to stringResource(resId) }
+            .forEachIndexed { index, (type, label) ->
             val isSelected = selected == type
             SegmentedButton(
                 colors = SegmentedButtonDefaults.colors().copy(
@@ -168,7 +171,7 @@ fun FrequencySelector(
                 label = {
                     Text(
                         text = label,
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
                     )
                 }
@@ -195,7 +198,9 @@ fun WeekdayPicker(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            HabitScreenUtils.days.forEach { (day, label) ->
+            HabitScreenUtils.days
+                .map { (day, resId) -> day to stringResource(resId) }
+                .forEach { (day, label) ->
                 val isSelected = day in selectedDays
                 Box(
                     Modifier

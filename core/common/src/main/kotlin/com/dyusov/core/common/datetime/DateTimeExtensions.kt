@@ -10,7 +10,10 @@ import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
 import kotlinx.datetime.number
 import kotlinx.datetime.plus
+import kotlinx.datetime.toJavaMonth
 import kotlinx.datetime.toLocalDateTime
+import java.time.format.TextStyle
+import java.util.Locale
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -39,6 +42,10 @@ fun YearMonth.plus(months: Int): YearMonth {
 }
 
 fun YearMonth.minus(months: Int): YearMonth = plus(-months)
+
+fun YearMonth.localizedMonthName(): String {
+    return month.toJavaMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault())
+}
 
 fun LocalDate.isToday(timeZone: TimeZone = TimeZone.currentSystemDefault()): Boolean {
     return this == LocalDate.nowClock(timeZone)

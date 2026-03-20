@@ -218,10 +218,12 @@ private fun ThemePickerSheet(
     val scope = rememberCoroutineScope()
 
     val options = listOf(
-        ThemeOption(ThemeMode.LIGHT, "Light", Icons.Outlined.LightMode),
-        ThemeOption(ThemeMode.DARK, "Dark", Icons.Outlined.DarkMode),
-        ThemeOption(ThemeMode.SYSTEM, "System default", Icons.Outlined.SettingsBrightness),
-    )
+        ThemeMode.LIGHT to Icons.Outlined.LightMode,
+        ThemeMode.DARK to Icons.Outlined.DarkMode,
+        ThemeMode.SYSTEM to Icons.Outlined.SettingsBrightness,
+    ).map { (mode, icon) ->
+        ThemeOption(mode, stringResource(mode.labelRes), icon)
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,

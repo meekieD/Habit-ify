@@ -76,6 +76,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.dyusov.core.common.datetime.localizedMonthName
 import com.dyusov.core.common.datetime.minus
 import com.dyusov.core.common.datetime.now
 import com.dyusov.core.common.datetime.nowClock
@@ -85,7 +86,6 @@ import com.dyusov.core.designsystem.ThemeMode
 import com.dyusov.core.designsystem.ThemeViewModel
 import com.dyusov.core.model.HabitFrequency
 import com.dyusov.core.ui.habit.HabitCardDefaults
-import com.dyusov.core.ui.utils.toPastel
 import com.dyusov.feature.habit.details.impl.utils.frequencyLabel
 import com.dyusov.feature.habit.details.impl.utils.navButtonColors
 import com.dyusov.feature.habit.details.impl.utils.surfaceIconColors
@@ -362,8 +362,10 @@ private fun StreakCard(
                     Text(
                         text = if (streak == 1) {
                             stringResource(R.string.day)
+                        } else if (streak in (2..4)) {
+                            stringResource(R.string.days_from_2_to_4)
                         } else {
-                            stringResource(R.string.days)
+                            stringResource(R.string.days_from_5_to_infinity)
                         },
                         color = onHabitColor.copy(alpha = 0.7f),
                         style = MaterialTheme.typography.titleMedium,
@@ -447,7 +449,7 @@ private fun CalendarCard(
                     Text(
                         text = stringResource(
                             R.string.month_label,
-                            month.month.name.lowercase().replaceFirstChar(Char::uppercaseChar),
+                            month.localizedMonthName().lowercase().replaceFirstChar(Char::uppercaseChar),
                             month.year
                         ),
                         color = MaterialTheme.colorScheme.onSurface,

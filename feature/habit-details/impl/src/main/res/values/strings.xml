@@ -5,7 +5,8 @@
   <string name="edit_habit">Edit habit</string>
   <string name="current_streak">Current Streak</string>
   <string name="day">day</string>
-  <string name="days">days</string>
+  <string name="days_from_2_to_4">days</string>
+  <string name="days_from_5_to_infinity">days</string>
   <string name="streak_fire_icon">Streak fire icon</string>
   <string name="previous_month">Previous month</string>
   <string name="next_month">Next month</string>

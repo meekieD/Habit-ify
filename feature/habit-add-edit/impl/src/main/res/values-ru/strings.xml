@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="new_habit">Создание</string>
+    <string name="back_to_main_screen">Назад на главный экран</string>
+    <string name="habit_name">Название</string>
+    <string name="description">Описание</string>
+    <string name="frequency">Частота выполнения</string>
+    <string name="save_habit">Сохранить</string>
+    <string name="days_of_week">Дни недели</string>
+    <string name="days_of_month">Дни месяца</string>
+    <string name="color">Цвет</string>
+    <string name="delete_habit">Удалить привычку</string>
+    <string name="edit_habit">Редактирование</string>
+
+    <string name="optional_details">Дополнительная информация…</string>
+    <string name="frequency_daily">Каждый день</string>
+    <string name="frequency_weekly">По дням</string>
+    <string name="frequency_custom">Вручную</string>
+
+    <string name="day_monday">Пн</string>
+    <string name="day_tuesday">Вт</string>
+    <string name="day_wednesday">Ср</string>
+    <string name="day_thursday">Чт</string>
+    <string name="day_friday">Пт</string>
+    <string name="day_saturday">Сб</string>
+    <string name="day_sunday">Вс</string>
+    <string name="e_g_morning_run">Утренняя пробежка...</string>
+</resources>

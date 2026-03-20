@@ -149,7 +149,7 @@ fun EditHabitScreen(
                         HabitField(
                             label = stringResource(R.string.habit_name),
                             value = currentState.habit.name,
-                            placeholder = "e.g. Morning run",
+                            placeholder = stringResource(R.string.e_g_morning_run),
                             onValueChange = {
                                 viewModel.processCommand(
                                     command = EditHabitCommand.InputName(it)
@@ -163,7 +163,7 @@ fun EditHabitScreen(
                         HabitField(
                             label = stringResource(R.string.description),
                             value = currentState.habit.description ?: "",
-                            placeholder = "Optional details…",
+                            placeholder = stringResource(R.string.optional_details),
                             onValueChange = {
                                 viewModel.processCommand(
                                     command = EditHabitCommand.InputDescription(it)
