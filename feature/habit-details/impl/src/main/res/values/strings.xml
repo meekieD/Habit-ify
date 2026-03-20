@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="details">Details</string>
-  <string name="back">Back</string>
-  <string name="edit_habit">Edit habit</string>
-  <string name="current_streak">Current Streak</string>
-  <string name="day">day</string>
-  <string name="days_from_2_to_4">days</string>
-  <string name="days_from_5_to_infinity">days</string>
-  <string name="streak_fire_icon">Streak fire icon</string>
-  <string name="previous_month">Previous month</string>
-  <string name="next_month">Next month</string>
-  <string name="month_label">%1$s %2$d</string>
+    <string name="details">Details</string>
+    <string name="back">Back</string>
+    <string name="edit_habit">Edit habit</string>
+    <string name="current_streak">Current Streak</string>
+    <string name="day">day</string>
+    <string name="days_from_2_to_4">days</string>
+    <string name="days_from_5_to_infinity">days</string>
+    <string name="streak_fire_icon">Streak fire icon</string>
+    <string name="previous_month">Previous month</string>
+    <string name="next_month">Next month</string>
+    <string name="month_label">%1$s %2$d</string>
     <string name="total">Total</string>
     <string name="success">Success</string>
     <string name="best">Best</string>
+
+    <string name="frequency_label_daily">DAILY</string>
+    <string name="frequency_label_weekly">WEEKLY · %s</string>
+    <string name="frequency_label_monthly">MONTHLY · %s</string>
+
+    <string name="day_monday">M</string>
+    <string name="day_tuesday">T</string>
+    <string name="day_wednesday">W</string>
+    <string name="day_thursday">T</string>
+    <string name="day_friday">F</string>
+    <string name="day_saturday">S</string>
+    <string name="day_sunday">S</string>
 </resources>

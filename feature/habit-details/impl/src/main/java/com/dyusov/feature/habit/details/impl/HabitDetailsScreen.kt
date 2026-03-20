@@ -68,6 +68,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -164,6 +165,8 @@ private fun HabitDetailsContentScreen(
 
     val haptic = LocalHapticFeedback.current
 
+    val context = LocalContext.current
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -225,7 +228,10 @@ private fun HabitDetailsContentScreen(
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = frequencyLabel(state.habit.frequency),
+                        text = frequencyLabel(
+                            context = context,
+                            frequency = state.habit.frequency
+                        ),
                         color = habitColor,
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
