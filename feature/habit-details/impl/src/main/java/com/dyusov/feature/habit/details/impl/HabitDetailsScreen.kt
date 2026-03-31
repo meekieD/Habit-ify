@@ -544,44 +544,55 @@ private fun CalendarGrid(
         }
     }
 
-    LazyVerticalGrid(
+    val daysInWeek = DayOfWeek.entries.count()
+
+    Column(
         modifier = modifier,
-        columns = GridCells.Fixed(7),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        userScrollEnabled = false
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        items(cells) { date ->
-            if (date != null) {
-                CalendarDayCell(
-                    date = date,
-                    isCompleted = date in completedDates,
-                    isScheduledMissed = when (frequency) {
-                        is HabitFrequency.Weekly -> {
-                            date.dayOfWeek in frequency.daysOfWeek &&
-                                    date <= today &&
-                                    date !in completedDates
-                        }
+        cells.chunked(daysInWeek).forEach { week ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                week.forEach { date ->
+                    Box(modifier = Modifier.weight(1f)) {
+                        if (date != null) {
+                            CalendarDayCell(
+                                date = date,
+                                isCompleted = date in completedDates,
+                                isScheduledMissed = when (frequency) {
+                                    is HabitFrequency.Weekly -> {
+                                        date.dayOfWeek in frequency.daysOfWeek &&
+                                                date <= today &&
+                                                date !in completedDates
+                                    }
 
-                        is HabitFrequency.Custom -> {
-                            date.day in frequency.daysOfMonth &&
-                                    date <= today &&
-                                    date !in completedDates
-                        }
+                                    is HabitFrequency.Custom -> {
+                                        date.day in frequency.daysOfMonth &&
+                                                date <= today &&
+                                                date !in completedDates
+                                    }
 
-                        HabitFrequency.Daily -> {
-                            date <= today && date !in completedDates
+                                    HabitFrequency.Daily -> {
+                                        date <= today && date !in completedDates
+                                    }
+                                },
+                                isToday = date == today,
+                                isFuture = date > today,
+                                habitColor = habitColor,
+                                onClick = {
+                                    onDateToggle(date)
+                                }
+                            )
+                        } else {
+                            Box(Modifier.aspectRatio(1f))
                         }
-                    },
-                    isToday = date == today,
-                    isFuture = date > today,
-                    habitColor = habitColor,
-                    onClick = {
-                        onDateToggle(date)
                     }
-                )
-            } else {
-                Box(Modifier.aspectRatio(1f))
+                }
+                repeat(daysInWeek - week.size) {
+                    Box(modifier = Modifier.weight(1f))
+                }
             }
         }
     }
