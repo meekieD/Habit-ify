@@ -617,23 +617,24 @@ private fun CalendarDayCell(
         modifier = modifier
             .aspectRatio(1f)
             .clip(cellShape)
-            .background(
-                when {
-                    isCompleted -> habitColor
-                    isToday -> habitColor.copy(alpha = 0.25f)
-                    else -> Color.Transparent
-                }
-            )
             .then(
                 if (isScheduledMissed) {
-                    Modifier.border(
-                        HabitCardDefaults.borderWidth,
-                        habitColor.copy(alpha = 0.5f),
-                        cellShape
-                    )
-                } else {
                     Modifier
-                }
+                        .border(
+                            HabitCardDefaults.borderWidth,
+                            habitColor.copy(alpha = 0.5f),
+                            cellShape
+                        )
+                        .padding(4.dp)
+                } else Modifier
+            )
+            .background(
+                color = when {
+                    isCompleted -> habitColor
+                    isToday -> habitColor.copy(alpha = 0.3f)
+                    else -> Color.Transparent
+                },
+                shape = cellShape
             )
             .clickable(enabled = !isFuture) {
                 haptic.performHapticFeedback(HapticFeedbackType.Confirm)
