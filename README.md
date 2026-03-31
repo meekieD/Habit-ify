@@ -1,5 +1,9 @@
 # Habit-ify
 
+<p>
+  <img src="screenshots/logo.png" alt="Habit-ify logo" width="160" />
+</p>
+
 An Android habit tracker for creating recurring habits, marking them complete, and reviewing progress through streaks, stats, and a calendar view.
 
 ## Overview
@@ -9,6 +13,26 @@ I built Habit-ify to solve a small but common UX problem: most habit trackers ha
 This project was also a deliberate architecture exercise. I wanted a portfolio app that shows how I structure a modern Android codebase when the goal is maintainability, not just shipping a screen quickly. That meant splitting features into modules, keeping business rules out of the UI layer, and using dependency injection and reactive state end to end.
 
 The app is fully local today. Habit data is stored on-device with Room, which keeps the interaction fast and makes the project a clean example of an offline-first Android app without backend noise.
+
+## Screenshots
+
+<p>
+  <img src="screenshots/main_screen_blank.png" alt="Empty agenda screen" width="240" />
+  <img src="screenshots/main_screen_one_habit.png" alt="Agenda screen with one habit" width="240" />
+  <img src="screenshots/light_theme.png" alt="Light theme" width="240" />
+</p>
+
+<p>
+  <img src="screenshots/add_edit_habit_screen.png" alt="Add or edit habit screen" width="240" />
+  <img src="screenshots/weekly_habit.png" alt="Weekly habit configuration" width="240" />
+  <img src="screenshots/custom_habit.png" alt="Custom monthly habit configuration" width="240" />
+</p>
+
+<p>
+  <img src="screenshots/habit_details_1.png" alt="Habit details overview" width="240" />
+  <img src="screenshots/habit_details_2.png" alt="Habit details statistics" width="240" />
+  <img src="screenshots/dark_theme.png" alt="Dark theme" width="240" />
+</p>
 
 ## What It Does
 
