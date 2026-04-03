@@ -19,7 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -33,8 +33,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
@@ -43,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.dyusov.core.model.FrequencyType
+import com.dyusov.core.ui.utils.HabitActionBottomSheet
 import com.dyusov.feature.habit.addedit.impl.R
 import com.dyusov.feature.habit.addedit.impl.common.ColorPicker
 import com.dyusov.feature.habit.addedit.impl.common.FrequencySelector
@@ -76,6 +81,37 @@ fun EditHabitScreen(
         EditHabitState.Initial -> {}
         is EditHabitState.Editing -> {
             val haptic = LocalHapticFeedback.current
+
+            val habitColor = remember(currentState.habit.color) {
+                Color(currentState.habit.color)
+            }
+            val onHabitColor = remember(habitColor) {
+                if (habitColor.luminance() > 0.5f) {
+                    Color.Black
+                } else {
+                    Color.White
+                }
+            }
+
+            var showDeleteSheet by remember { mutableStateOf(false) }
+
+            if (showDeleteSheet) {
+                HabitActionBottomSheet(
+                    habitColor = habitColor,
+                    onHabitColor = onHabitColor,
+                    onConfirm = {
+                        showDeleteSheet = false
+                        viewModel.processCommand(EditHabitCommand.Delete)
+                    },
+                    onDismiss = {
+                        showDeleteSheet = false
+                    },
+                    label = stringResource(R.string.delete_habit_title),
+                    description = stringResource(R.string.delete_habit_description),
+                    confirmLabel = stringResource(R.string.delete_habit_confirm),
+                    cancelLabel = stringResource(R.string.cancel)
+                )
+            }
             Scaffold(
                 modifier = modifier,
                 topBar = {
@@ -110,8 +146,7 @@ fun EditHabitScreen(
                             FilledTonalIconButton(
                                 modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                                 onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    viewModel.processCommand(EditHabitCommand.Delete)
+                                    showDeleteSheet = true
                                 },
                                 colors = IconButtonDefaults.filledTonalIconButtonColors(
                                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -119,7 +154,7 @@ fun EditHabitScreen(
                                 )
                             ) {
                                 Icon(
-                                    imageVector = Icons.Outlined.Delete,
+                                    imageVector = Icons.Rounded.Delete,
                                     contentDescription = stringResource(R.string.delete_habit)
                                 )
                             }
