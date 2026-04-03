@@ -6,5 +6,5 @@
     <string name="appearance">Внешний вид</string>
     <string name="choose_how_habitify_looks">Выберите, как будет выглядеть «Привыкай-ка!»</string>
     <string name="edit_habit">Редактировать</string>
-    <string name="delete_habit_title">Удалить</string>
+    <string name="delete_habit">Удалить</string>
 </resources>

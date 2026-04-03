@@ -80,7 +80,6 @@ import com.dyusov.core.designsystem.ThemeViewModel
 import com.dyusov.core.model.Habit
 import com.dyusov.core.ui.habit.HabitCardDefaults
 import com.dyusov.core.ui.utils.ActionsBottomSheet
-import com.dyusov.core.ui.utils.HabitActionBottomSheet
 import com.dyusov.core.ui.utils.SheetAction
 import com.dyusov.core.ui.utils.SwipeActionState
 import com.dyusov.core.ui.utils.getActionText
@@ -223,7 +222,7 @@ fun HabitAgendaScreen(
                 ),
                 SheetAction(
                     icon = Icons.Rounded.Delete,
-                    label = stringResource(R.string.delete_habit_title),
+                    label = stringResource(R.string.delete_habit),
                     tint = MaterialTheme.colorScheme.error,
                     haptic = HapticFeedbackType.LongPress,
                     onClick = {
