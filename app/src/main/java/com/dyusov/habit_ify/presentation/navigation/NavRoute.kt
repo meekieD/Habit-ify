@@ -26,6 +26,9 @@ fun NavRoute() {
             },
             onHabitCreationScreen = {
                 backstack.add(CreateHabitNavKey)
+            },
+            onEditHabitScreen = { habitId ->
+                backstack.add(EditHabitNavKey(habitId))
             }
         )
         createHabitEntry(

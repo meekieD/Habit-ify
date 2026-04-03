@@ -30,6 +30,8 @@ import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.SettingsBrightness
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -77,6 +79,9 @@ import com.dyusov.core.designsystem.ThemeOption
 import com.dyusov.core.designsystem.ThemeViewModel
 import com.dyusov.core.model.Habit
 import com.dyusov.core.ui.habit.HabitCardDefaults
+import com.dyusov.core.ui.utils.ActionsBottomSheet
+import com.dyusov.core.ui.utils.HabitActionBottomSheet
+import com.dyusov.core.ui.utils.SheetAction
 import com.dyusov.core.ui.utils.SwipeActionState
 import com.dyusov.core.ui.utils.getActionText
 import com.dyusov.core.ui.utils.toPastel
@@ -89,6 +94,7 @@ fun HabitAgendaScreen(
     habitAgendaViewModel: HabitAgendaViewModel = hiltViewModel(),
     themeViewModel: ThemeViewModel = hiltViewModel(LocalActivity.current as ComponentActivity),
     onHabitClick: (Long) -> Unit,
+    onEditHabitClick: (Long) -> Unit,
     onAddHabitClick: () -> Unit
 ) {
     val state by habitAgendaViewModel.state.collectAsState()
@@ -101,6 +107,7 @@ fun HabitAgendaScreen(
         ThemeMode.SYSTEM -> isSystemInDarkTheme()
     }
     var showThemePicker by rememberSaveable { mutableStateOf(false) }
+    var selectedHabitId by remember { mutableStateOf<Long?>(null) }
 
     Scaffold(
         modifier = modifier,
@@ -183,9 +190,7 @@ fun HabitAgendaScreen(
                     },
                     onHabitClick = onHabitClick,
                     onLongHabitClick = { habitId ->
-                        habitAgendaViewModel.processCommand(
-                            command = HabitAgendaCommand.DeleteHabit(habitId)
-                        )
+                        selectedHabitId = habitId
                     },
                     isDark = isDark
                 )
@@ -202,6 +207,34 @@ fun HabitAgendaScreen(
             },
             onDismiss = {
                 showThemePicker = false
+            }
+        )
+    }
+
+    selectedHabitId?.let { habitId ->
+        ActionsBottomSheet(
+            actions = listOf(
+                SheetAction(
+                    icon = Icons.Rounded.Edit,
+                    label = stringResource(R.string.edit_habit),
+                    onClick = {
+                        onEditHabitClick(habitId)
+                    }
+                ),
+                SheetAction(
+                    icon = Icons.Rounded.Delete,
+                    label = stringResource(R.string.delete_habit_title),
+                    tint = MaterialTheme.colorScheme.error,
+                    haptic = HapticFeedbackType.LongPress,
+                    onClick = {
+                        habitAgendaViewModel.processCommand(
+                            HabitAgendaCommand.DeleteHabit(habitId)
+                        )
+                    }
+                )
+            ),
+            onDismiss = {
+                selectedHabitId = null
             }
         )
     }
