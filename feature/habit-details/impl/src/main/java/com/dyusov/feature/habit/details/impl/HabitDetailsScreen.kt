@@ -39,6 +39,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ChevronLeft
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.LocalFireDepartment
 import androidx.compose.material3.Card
@@ -86,6 +87,7 @@ import com.dyusov.core.designsystem.ThemeMode
 import com.dyusov.core.designsystem.ThemeViewModel
 import com.dyusov.core.model.HabitFrequency
 import com.dyusov.core.ui.habit.HabitCardDefaults
+import com.dyusov.core.ui.utils.HabitActionBottomSheet
 import com.dyusov.feature.habit.details.impl.utils.frequencyLabel
 import com.dyusov.feature.habit.details.impl.utils.navButtonColors
 import com.dyusov.feature.habit.details.impl.utils.surfaceIconColors
@@ -166,6 +168,26 @@ private fun HabitDetailsContentScreen(
 
     val context = LocalContext.current
 
+    var showDeleteSheet by remember { mutableStateOf(false) }
+
+    if (showDeleteSheet) {
+        HabitActionBottomSheet(
+            habitColor = habitColor,
+            onHabitColor = onHabitColor,
+            onConfirm = {
+                showDeleteSheet = false
+                onCommand(HabitDetailsCommand.Delete)
+            },
+            onDismiss = {
+                showDeleteSheet = false
+            },
+            label = stringResource(R.string.delete_habit_title),
+            description = stringResource(R.string.delete_habit_description),
+            confirmLabel = stringResource(R.string.delete_habit_confirm),
+            cancelLabel = stringResource(R.string.cancel)
+        )
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -193,6 +215,18 @@ private fun HabitDetailsContentScreen(
                     }
                 },
                 actions = {
+                    FilledTonalIconButton(
+                        modifier = Modifier.padding(start = 8.dp),
+                        onClick = {
+                            showDeleteSheet = true
+                        },
+                        colors = surfaceIconColors
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Delete,
+                            contentDescription = stringResource(R.string.delete_habit_title)
+                        )
+                    }
                     FilledTonalIconButton(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         onClick = {
@@ -455,7 +489,8 @@ private fun CalendarCard(
                     Text(
                         text = stringResource(
                             R.string.month_label,
-                            month.localizedMonthName().lowercase().replaceFirstChar(Char::uppercaseChar),
+                            month.localizedMonthName().lowercase()
+                                .replaceFirstChar(Char::uppercaseChar),
                             month.year
                         ),
                         color = MaterialTheme.colorScheme.onSurface,

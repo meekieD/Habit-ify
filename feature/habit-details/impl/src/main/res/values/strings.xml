@@ -26,4 +26,9 @@
     <string name="day_friday">F</string>
     <string name="day_saturday">S</string>
     <string name="day_sunday">S</string>
+
+    <string name="delete_habit_title">Delete the habit?</string>
+    <string name="delete_habit_description">This action is permanent and cannot be reverted</string>
+    <string name="delete_habit_confirm">Yes, delete</string>
+    <string name="cancel">Cancel</string>
 </resources>

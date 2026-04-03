@@ -11,6 +11,7 @@ import com.dyusov.core.common.datetime.toEndOfMonthTimestamp
 import com.dyusov.core.common.datetime.toLocalDate
 import com.dyusov.core.common.datetime.toStartOfMonthTimestamp
 import com.dyusov.core.common.utils.onSuccess
+import com.dyusov.core.domain.habit.DeleteHabitUseCase
 import com.dyusov.core.domain.streak.CalculateStreakUseCase
 import com.dyusov.core.domain.tracking.GetHabitWithCompletionsUseCase
 import com.dyusov.core.domain.tracking.ToggleHabitCompletionOnDateUseCase
@@ -21,6 +22,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -39,6 +41,7 @@ import kotlinx.datetime.daysUntil
 class HabitDetailsViewModel @AssistedInject constructor(
     private val getHabitWithCompletionsUseCase: GetHabitWithCompletionsUseCase,
     private val toggleHabitCompletionOnDateUseCase: ToggleHabitCompletionOnDateUseCase,
+    private val deleteHabitUseCase: DeleteHabitUseCase,
     private val calculateStreakUseCase: CalculateStreakUseCase,
     private val dateTimeProvider: DateTimeProvider,
     @Assisted("habitId") private val habitId: Long
@@ -59,6 +62,8 @@ class HabitDetailsViewModel @AssistedInject constructor(
 
     private val _currentMonth = MutableStateFlow(YearMonth.now())
 
+    private var loadJob: Job? = null
+
     init {
         observeStreak()
         loadHabitDetails()
@@ -68,16 +73,13 @@ class HabitDetailsViewModel @AssistedInject constructor(
         viewModelScope.launch {
             when (command) {
                 is HabitDetailsCommand.ToggleHabitCompletionOnDate -> {
-                    when (val currentState = _state.value) {
-                        is HabitDetailsState.Content -> {
-                            toggleHabitCompletionOnDateUseCase(
-                                habitId = currentState.habit.id,
-                                date = command.selectedDate
-                            )
-                            _streakTrigger.tryEmit(Unit)
-                        }
-
-                        HabitDetailsState.Initial -> {}
+                    val currentState = _state.value
+                    if (currentState is HabitDetailsState.Content) {
+                        toggleHabitCompletionOnDateUseCase(
+                            habitId = currentState.habit.id,
+                            date = command.selectedDate
+                        )
+                        _streakTrigger.tryEmit(Unit)
                     }
                 }
 
@@ -88,12 +90,21 @@ class HabitDetailsViewModel @AssistedInject constructor(
                 is HabitDetailsCommand.Back -> {
                     _navigationEvent.tryEmit(Unit)
                 }
+
+                HabitDetailsCommand.Delete -> {
+                    val currentState = _state.value
+                    if (currentState is HabitDetailsState.Content) {
+                        loadJob?.cancel() // stop loading habit
+                        deleteHabitUseCase(currentState.habit.id)
+                        _navigationEvent.tryEmit(Unit)
+                    }
+                }
             }
         }
     }
 
     private fun loadHabitDetails() {
-        viewModelScope.launch {
+        loadJob = viewModelScope.launch {
             getHabitWithCompletionsUseCase(habitId)
                 .flatMapLatest { result ->
                     combine(
@@ -181,6 +192,7 @@ class HabitDetailsViewModel @AssistedInject constructor(
 sealed interface HabitDetailsCommand {
     data class ToggleHabitCompletionOnDate(val selectedDate: LocalDate) : HabitDetailsCommand
     data class SetDisplayedMonth(val selectedMonth: YearMonth) : HabitDetailsCommand
+    data object Delete : HabitDetailsCommand
     data object Back : HabitDetailsCommand
 }
 
