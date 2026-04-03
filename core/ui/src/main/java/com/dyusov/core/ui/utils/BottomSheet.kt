@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +26,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 
 @Composable
 fun HabitActionBottomSheet(
@@ -38,8 +40,17 @@ fun HabitActionBottomSheet(
     confirmLabel: String,
     cancelLabel: String
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val haptic = LocalHapticFeedback.current
+
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    val scope = rememberCoroutineScope()
+    fun animatedDismiss() {
+        scope.launch {
+            sheetState.hide()
+            onDismiss()
+        }
+    }
 
     ModalBottomSheet(
         modifier = modifier,
@@ -92,7 +103,9 @@ fun HabitActionBottomSheet(
             }
             Spacer(Modifier.height(12.dp))
             TextButton(
-                onClick = onDismiss,
+                onClick = {
+                    animatedDismiss()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
