@@ -88,6 +88,7 @@ import com.dyusov.core.designsystem.ThemeViewModel
 import com.dyusov.core.model.HabitFrequency
 import com.dyusov.core.ui.habit.HabitCardDefaults
 import com.dyusov.core.ui.utils.HabitActionBottomSheet
+import com.dyusov.core.ui.utils.HabitScreenUtils
 import com.dyusov.feature.habit.details.impl.utils.frequencyLabel
 import com.dyusov.feature.habit.details.impl.utils.navButtonColors
 import com.dyusov.feature.habit.details.impl.utils.surfaceIconColors
@@ -516,8 +517,13 @@ private fun CalendarCard(
             Spacer(Modifier.height(16.dp))
 
             // Day-of-week headers
-            Row(modifier = Modifier.fillMaxWidth()) {
-                DayOfWeek.entries.map { it.name[0].uppercase() }.forEach { label ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                HabitScreenUtils.days
+                    .map { (day, resId) -> day to stringResource(resId) }
+                    .forEach { (_, label) ->
                     Text(
                         text = label,
                         modifier = Modifier.weight(1f),
