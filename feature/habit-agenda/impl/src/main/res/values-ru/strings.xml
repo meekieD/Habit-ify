@@ -7,4 +7,5 @@
     <string name="choose_how_habitify_looks">Выберите, как будет выглядеть «Привыкай-ка!»</string>
     <string name="edit_habit">Редактировать</string>
     <string name="delete_habit">Удалить</string>
+    <string name="toggle_completion">Переключить выполнение</string>
 </resources>

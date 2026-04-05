@@ -7,4 +7,5 @@
     <string name="choose_how_habitify_looks">Choose how «Habit-ify!» looks</string>
     <string name="edit_habit">Edit</string>
     <string name="delete_habit">Delete</string>
+    <string name="toggle_completion">Toggle completion</string>
 </resources>

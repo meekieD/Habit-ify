@@ -30,6 +30,8 @@ import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.SettingsBrightness
+import androidx.compose.material.icons.rounded.Cancel
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Card
@@ -211,8 +213,19 @@ fun HabitAgendaScreen(
     }
 
     selectedHabitId?.let { habitId ->
+        val isCompleted = state.items.find { it.id == habitId }?.isCompletedToday == true
         ActionsBottomSheet(
             actions = listOf(
+                SheetAction(
+                    icon = if (isCompleted) Icons.Rounded.Cancel else Icons.Rounded.CheckCircle,
+                    label = stringResource(R.string.toggle_completion),
+                    haptic = HapticFeedbackType.LongPress,
+                    onClick = {
+                        habitAgendaViewModel.processCommand(
+                            HabitAgendaCommand.ToggleHabitCompletion(habitId)
+                        )
+                    }
+                ),
                 SheetAction(
                     icon = Icons.Rounded.Edit,
                     label = stringResource(R.string.edit_habit),
