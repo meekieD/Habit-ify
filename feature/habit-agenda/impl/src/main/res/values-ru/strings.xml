@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="your_habits">Ваши привычки</string>
-    <string name="swipe_to_mark_done_or_reset">Проведите, чтобы выполнить или сбросить</string>
+    <string name="swipe_to_mark_done_or_reset">Смахните, чтобы выполнить или отменить</string>
     <string name="new_habit">Создать</string>
     <string name="appearance">Внешний вид</string>
     <string name="choose_how_habitify_looks">Выберите, как будет выглядеть «Привыкай-ка!»</string>
