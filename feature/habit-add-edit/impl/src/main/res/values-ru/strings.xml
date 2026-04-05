@@ -17,13 +17,6 @@
     <string name="frequency_weekly">По дням</string>
     <string name="frequency_custom">Вручную</string>
 
-    <string name="day_monday">Пн</string>
-    <string name="day_tuesday">Вт</string>
-    <string name="day_wednesday">Ср</string>
-    <string name="day_thursday">Чт</string>
-    <string name="day_friday">Пт</string>
-    <string name="day_saturday">Сб</string>
-    <string name="day_sunday">Вс</string>
     <string name="e_g_morning_run">Утренняя пробежка...</string>
 
     <string name="delete_habit_title">Удалить привычку?</string>

@@ -2,4 +2,12 @@
 <resources>
     <string name="undo_action">Undo</string>
     <string name="done_action">Done</string>
+
+    <string name="day_monday">Mo</string>
+    <string name="day_tuesday">Tu</string>
+    <string name="day_wednesday">We</string>
+    <string name="day_thursday">Th</string>
+    <string name="day_friday">Fr</string>
+    <string name="day_saturday">Sa</string>
+    <string name="day_sunday">Su</string>
 </resources>

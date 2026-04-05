@@ -19,13 +19,6 @@
     <string name="frequency_label_weekly">ЕЖЕНЕДЕЛЬНО · %s</string>
     <string name="frequency_label_monthly">ЕЖЕМЕСЯЧНО · %s</string>
 
-    <string name="day_monday">Пн</string>
-    <string name="day_tuesday">Вт</string>
-    <string name="day_wednesday">Ср</string>
-    <string name="day_thursday">Чт</string>
-    <string name="day_friday">Пт</string>
-    <string name="day_saturday">Сб</string>
-    <string name="day_sunday">Вс</string>
     <string name="delete_habit_title">Удалить привычку?</string>
     <string name="delete_habit_description">Это действие не может быть отменено</string>
     <string name="delete_habit_confirm">Да, удалить</string>

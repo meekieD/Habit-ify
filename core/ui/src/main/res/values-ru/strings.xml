@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="undo_action">Снять отметку</string>
+    <string name="done_action">Отменить</string>
+
+    <string name="day_monday">Пн</string>
+    <string name="day_tuesday">Вт</string>
+    <string name="day_wednesday">Ср</string>
+    <string name="day_thursday">Чт</string>
+    <string name="day_friday">Пт</string>
+    <string name="day_saturday">Сб</string>
+    <string name="day_sunday">Вс</string>
+</resources>

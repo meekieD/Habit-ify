@@ -6,6 +6,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import com.dyusov.core.model.HabitFrequency
+import com.dyusov.core.ui.utils.HabitScreenUtils
 import com.dyusov.feature.habit.details.impl.R
 import kotlinx.datetime.DayOfWeek
 import java.util.Locale
@@ -50,15 +51,7 @@ fun ordinal(n: Int, locale: Locale = Locale.getDefault()): String {
 }
 
 val DayOfWeek.labelRes: Int
-    get() = when (this) {
-        DayOfWeek.MONDAY -> R.string.day_monday
-        DayOfWeek.TUESDAY -> R.string.day_tuesday
-        DayOfWeek.WEDNESDAY -> R.string.day_wednesday
-        DayOfWeek.THURSDAY -> R.string.day_thursday
-        DayOfWeek.FRIDAY -> R.string.day_friday
-        DayOfWeek.SATURDAY -> R.string.day_saturday
-        DayOfWeek.SUNDAY -> R.string.day_sunday
-    }
+    get() = HabitScreenUtils.days.first { it.first == this }.second
 
 val surfaceIconColors: IconButtonColors
     @Composable get() = IconButtonDefaults.filledTonalIconButtonColors(

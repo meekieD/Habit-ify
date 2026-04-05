@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -41,8 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dyusov.core.model.FrequencyType
 import com.dyusov.core.ui.habit.HabitCardDefaults
+import com.dyusov.core.ui.utils.HabitScreenUtils
 import com.dyusov.feature.habit.addedit.impl.R
-import com.dyusov.feature.habit.addedit.impl.utils.HabitScreenUtils
+import com.dyusov.feature.habit.addedit.impl.utils.AddEditHabitScreenUtils
 import kotlinx.datetime.DayOfWeek
 
 @Composable
@@ -149,7 +149,7 @@ fun FrequencySelector(
     SingleChoiceSegmentedButtonRow(
         modifier = modifier.fillMaxWidth()
     ) {
-        HabitScreenUtils.frequencySelectorOptions
+        AddEditHabitScreenUtils.frequencySelectorOptions
             .map { (type, resId) -> type to stringResource(resId) }
             .forEachIndexed { index, (type, label) ->
             val isSelected = selected == type
@@ -161,7 +161,7 @@ fun FrequencySelector(
                 ),
                 shape = SegmentedButtonDefaults.itemShape(
                     index = index,
-                    count = HabitScreenUtils.frequencySelectorOptions.size
+                    count = AddEditHabitScreenUtils.frequencySelectorOptions.size
                 ),
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)

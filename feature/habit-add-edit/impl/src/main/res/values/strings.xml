@@ -18,14 +18,6 @@
     <string name="frequency_weekly">Weekly</string>
     <string name="frequency_custom">Custom</string>
 
-    <string name="day_monday">M</string>
-    <string name="day_tuesday">T</string>
-    <string name="day_wednesday">W</string>
-    <string name="day_thursday">T</string>
-    <string name="day_friday">F</string>
-    <string name="day_saturday">S</string>
-    <string name="day_sunday">S</string>
-
     <string name="delete_habit_title">Delete the habit?</string>
     <string name="delete_habit_description">This action is permanent and cannot be reverted</string>
     <string name="delete_habit_confirm">Yes, delete</string>

@@ -49,7 +49,7 @@ import com.dyusov.feature.habit.addedit.impl.common.HabitField
 import com.dyusov.feature.habit.addedit.impl.common.MonthDayPicker
 import com.dyusov.feature.habit.addedit.impl.common.SaveHabitButton
 import com.dyusov.feature.habit.addedit.impl.common.WeekdayPicker
-import com.dyusov.feature.habit.addedit.impl.utils.HabitScreenUtils
+import com.dyusov.feature.habit.addedit.impl.utils.AddEditHabitScreenUtils
 
 @Composable
 fun CreateHabitScreen(
@@ -195,7 +195,7 @@ fun CreateHabitScreen(
                         // Color
                         ColorPicker(
                             selectedColor = currentState.color,
-                            colors = HabitScreenUtils.habitColors,
+                            colors = AddEditHabitScreenUtils.habitColors,
                             onSelect = {
                                 viewModel.processCommand(
                                     command = CreateHabitCommand.SelectColor(it)
