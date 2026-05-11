@@ -9,9 +9,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
@@ -92,6 +90,7 @@ import com.dyusov.core.ui.utils.HabitScreenUtils
 import com.dyusov.feature.habit.details.impl.utils.frequencyLabel
 import com.dyusov.feature.habit.details.impl.utils.navButtonColors
 import com.dyusov.feature.habit.details.impl.utils.surfaceIconColors
+import com.dyusov.feature.habit.details.impl.utils.transitionSpec
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
@@ -440,13 +439,6 @@ private fun CalendarCard(
 ) {
     val canGoNext = currentMonth < YearMonth.now()
 
-    var slideDirection by remember { mutableIntStateOf(1) }
-    var previousMonth by remember { mutableStateOf(currentMonth) }
-
-    LaunchedEffect(currentMonth) {
-        slideDirection = if (currentMonth > previousMonth) 1 else -1
-    }
-
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
@@ -475,17 +467,7 @@ private fun CalendarCard(
 
                 AnimatedContent(
                     targetState = currentMonth,
-                    transitionSpec = {
-                        val direction = slideDirection
-                        slideInHorizontally(
-                            animationSpec = tween(300, easing = FastOutSlowInEasing),
-                            initialOffsetX = { it * direction }
-                        ) + fadeIn(tween(300)) togetherWith
-                                slideOutHorizontally(
-                                    animationSpec = tween(300, easing = FastOutSlowInEasing),
-                                    targetOffsetX = { -it * direction }
-                                ) + fadeOut(tween(300))
-                    }
+                    transitionSpec = transitionSpec()
                 ) { month ->
                     Text(
                         text = stringResource(
@@ -540,17 +522,7 @@ private fun CalendarCard(
 
             AnimatedContent(
                 targetState = currentMonth,
-                transitionSpec = {
-                    val direction = slideDirection
-                    slideInHorizontally(
-                        animationSpec = tween(300, easing = FastOutSlowInEasing),
-                        initialOffsetX = { it * direction }
-                    ) + fadeIn(tween(300)) togetherWith
-                            slideOutHorizontally(
-                                animationSpec = tween(300, easing = FastOutSlowInEasing),
-                                targetOffsetX = { -it * direction }
-                            ) + fadeOut(tween(300))
-                }
+                transitionSpec = transitionSpec()
             ) { month ->
                 CalendarGrid(
                     month = month,
