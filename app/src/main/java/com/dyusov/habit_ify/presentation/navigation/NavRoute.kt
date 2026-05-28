@@ -1,5 +1,8 @@
 package com.dyusov.habit_ify.presentation.navigation
 
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -58,6 +61,15 @@ fun NavRoute() {
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
         ),
-        entryProvider = appProvider
+        entryProvider = appProvider,
+        transitionSpec = {
+            slideInHorizontally { it } togetherWith slideOutHorizontally { -it }
+        },
+        popTransitionSpec = {
+            slideInHorizontally { -it } togetherWith slideOutHorizontally { it }
+        },
+        predictivePopTransitionSpec = {
+            slideInHorizontally { -it } togetherWith slideOutHorizontally { it }
+        }
     )
 }
