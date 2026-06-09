@@ -5,6 +5,7 @@ import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import com.dyusov.core.model.HabitFrequency
 import com.dyusov.core.ui.utils.HabitScreenUtils
 import com.dyusov.feature.habit.details.impl.R
@@ -48,6 +49,18 @@ fun ordinal(n: Int, locale: Locale = Locale.getDefault()): String {
         }
         "$n$suffix"
     }
+}
+
+@Composable
+fun streakDaysLabel(streak: Int): String {
+    val lastTwo = streak % 100
+    val textRes = when {
+        lastTwo in 11..14 -> R.string.days_from_5_to_infinity
+        lastTwo % 10 == 1 -> R.string.day
+        lastTwo % 10 in 2..4 -> R.string.days_from_2_to_4
+        else -> R.string.days_from_5_to_infinity
+    }
+    return stringResource(textRes)
 }
 
 val DayOfWeek.labelRes: Int

@@ -89,6 +89,7 @@ import com.dyusov.core.ui.utils.HabitActionBottomSheet
 import com.dyusov.core.ui.utils.HabitScreenUtils
 import com.dyusov.feature.habit.details.impl.utils.frequencyLabel
 import com.dyusov.feature.habit.details.impl.utils.navButtonColors
+import com.dyusov.feature.habit.details.impl.utils.streakDaysLabel
 import com.dyusov.feature.habit.details.impl.utils.surfaceIconColors
 import com.dyusov.feature.habit.details.impl.utils.transitionSpec
 import kotlinx.datetime.DayOfWeek
@@ -400,13 +401,7 @@ private fun StreakCard(
 
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        text = if (streak == 1) {
-                            stringResource(R.string.day)
-                        } else if (streak in (2..4)) {
-                            stringResource(R.string.days_from_2_to_4)
-                        } else {
-                            stringResource(R.string.days_from_5_to_infinity)
-                        },
+                        text = streakDaysLabel(streak),
                         color = onHabitColor.copy(alpha = 0.7f),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Medium,
