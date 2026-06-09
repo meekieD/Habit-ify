@@ -3,7 +3,9 @@ package com.dyusov.habit_ify.presentation.navigation
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -56,6 +58,7 @@ fun NavRoute() {
     }
 
     NavDisplay(
+        modifier = Modifier.fillMaxSize(),
         backStack = backstack,
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
