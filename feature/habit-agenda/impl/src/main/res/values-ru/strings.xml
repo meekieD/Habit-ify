@@ -8,4 +8,7 @@
     <string name="edit_habit">Редактировать</string>
     <string name="delete_habit">Удалить</string>
     <string name="toggle_completion">Переключить выполнение</string>
+    <string name="appwidget_text">ПРИМЕР</string>
+    <string name="add_widget">Добавить виджет</string>
+    <string name="app_widget_description">Отслеживание привычки</string>
 </resources>

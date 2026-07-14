@@ -48,6 +48,8 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:ui"))
 
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.androidx.hilt.compiler)
