@@ -57,6 +57,7 @@ dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:domain"))
     implementation(project(":core:designsystem"))
+    implementation(project(":core:widget"))
 
     implementation(project(":feature:habit-agenda:api"))
     implementation(project(":feature:habit-agenda:impl"))

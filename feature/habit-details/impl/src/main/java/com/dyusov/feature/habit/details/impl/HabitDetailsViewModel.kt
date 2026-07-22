@@ -17,6 +17,7 @@ import com.dyusov.core.domain.tracking.GetHabitWithCompletionsUseCase
 import com.dyusov.core.domain.tracking.ToggleHabitCompletionOnDateUseCase
 import com.dyusov.core.model.Habit
 import com.dyusov.core.model.HabitCompletion
+import com.dyusov.core.widget.HabitWidgetWorkManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -44,6 +45,7 @@ class HabitDetailsViewModel @AssistedInject constructor(
     private val deleteHabitUseCase: DeleteHabitUseCase,
     private val calculateStreakUseCase: CalculateStreakUseCase,
     private val dateTimeProvider: DateTimeProvider,
+    private val habitWidgetWorkManager: HabitWidgetWorkManager,
     @Assisted("habitId") private val habitId: Long
 ) : ViewModel() {
 
@@ -80,6 +82,7 @@ class HabitDetailsViewModel @AssistedInject constructor(
                             date = command.selectedDate
                         )
                         _streakTrigger.tryEmit(Unit)
+                        habitWidgetWorkManager.forceWidgetUpdateNow()
                     }
                 }
 

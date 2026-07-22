@@ -1,4 +1,4 @@
-package com.dyusov.feature.habit.agenda.impl.widget
+package com.dyusov.core.widget
 
 import com.dyusov.core.common.datetime.DateTimeProvider
 import com.dyusov.core.domain.tracking.GetHabitWithCompletionsUseCase

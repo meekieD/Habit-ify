@@ -12,6 +12,8 @@ import com.dyusov.core.domain.habit.DeleteHabitUseCase
 import com.dyusov.core.domain.tracking.GetAllHabitsWithCompletionsUseCase
 import com.dyusov.core.domain.tracking.ToggleHabitCompletionOnDateUseCase
 import com.dyusov.core.model.Habit
+import com.dyusov.core.widget.HabitWidget
+import com.dyusov.core.widget.HabitWidgetWorkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +30,8 @@ class HabitAgendaViewModel @Inject constructor(
     private val getAllHabitsWithCompletionsUseCase: GetAllHabitsWithCompletionsUseCase,
     private val toggleHabitCompletionOnDateUseCase: ToggleHabitCompletionOnDateUseCase,
     private val deleteHabitUseCase: DeleteHabitUseCase,
-    private val dateTimeProvider: DateTimeProvider
+    private val dateTimeProvider: DateTimeProvider,
+    private val habitWidgetWorkManager: HabitWidgetWorkManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HabitAgendaState())
@@ -89,6 +92,7 @@ class HabitAgendaViewModel @Inject constructor(
                         habitId = command.habitId,
                         date = dateTimeProvider.nowLocalDate()
                     )
+                    habitWidgetWorkManager.forceWidgetUpdateNow()
                 }
 
                 is HabitAgendaCommand.DeleteHabit -> {

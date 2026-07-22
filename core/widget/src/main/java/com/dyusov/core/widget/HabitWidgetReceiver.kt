@@ -1,4 +1,4 @@
-package com.dyusov.feature.habit.agenda.impl.widget
+package com.dyusov.core.widget
 
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver

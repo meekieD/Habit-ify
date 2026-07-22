@@ -13,4 +13,6 @@ interface DateTimeProvider {
     fun nowLocalDateTime(timeZone: TimeZone = timeZone()): LocalDateTime
 
     fun timeZone(): TimeZone
+
+    fun getMillisToNextMidnight(timeZone: TimeZone = timeZone()): Long
 }

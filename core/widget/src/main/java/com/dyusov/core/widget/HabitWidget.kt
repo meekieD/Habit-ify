@@ -1,4 +1,4 @@
-package com.dyusov.feature.habit.agenda.impl.widget
+package com.dyusov.core.widget
 
 
 import android.content.Context
@@ -58,6 +58,7 @@ class HabitWidget : GlanceAppWidget() {
         private val DOT_CONTAINER_SIZE = 20.dp
         private val MIN_WIDTH_FOR_FULL_WEEK = 200.dp
         val HABIT_ID_KEY = longPreferencesKey("habit_id")
+        val FORCE_UPDATE_KEY = longPreferencesKey("force_update_trigger")
     }
 
     override val sizeMode: SizeMode = SizeMode.Exact
@@ -75,18 +76,16 @@ class HabitWidget : GlanceAppWidget() {
             val prefs = currentState<Preferences>()
             val habitId = prefs[HABIT_ID_KEY]
 
-            val widgetData: HabitWithCompletions? = remember(habitId) {
-                if (habitId != null) {
-                    runBlocking {
-                        val selectedHabit = entryPoint.getHabitWithCompletions().invoke(habitId).firstOrNull()
-                        when (selectedHabit) {
-                            is MyResult.Success -> selectedHabit.data
-                            is MyResult.Error, null -> null
-                        }
+            val widgetData: HabitWithCompletions? = if (habitId != null) {
+                runBlocking {
+                    val selectedHabit = entryPoint.getHabitWithCompletions().invoke(habitId).firstOrNull()
+                    when (selectedHabit) {
+                        is MyResult.Success -> selectedHabit.data
+                        is MyResult.Error, null -> null
                     }
-                } else {
-                    null
                 }
+            } else {
+                null
             }
 
             GlanceTheme(GlanceTheme.colors) {
