@@ -2,6 +2,7 @@ package com.dyusov.core.widget
 
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -20,8 +21,10 @@ import androidx.glance.GlanceTheme
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.LocalSize
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.SizeMode
+import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.currentState
@@ -99,7 +102,7 @@ class HabitWidget : GlanceAppWidget() {
     }
 
     @Composable
-    fun EmptyWidgetContent() {
+    private fun EmptyWidgetContent() {
         Box(
             modifier = GlanceModifier
                 .fillMaxSize()
@@ -115,7 +118,7 @@ class HabitWidget : GlanceAppWidget() {
     }
 
     @Composable
-    fun HabitWidgetContent(widgetData: HabitWithCompletions, dateTimeProvider: DateTimeProvider) {
+    private fun HabitWidgetContent(widgetData: HabitWithCompletions, dateTimeProvider: DateTimeProvider) {
 
         // Calculate dynamic weekly date bounds (Mon - Sun)
         val today = LocalDate.nowClock()
@@ -141,11 +144,15 @@ class HabitWidget : GlanceAppWidget() {
         val canShowFullWeek = widgetSize.width >= MIN_WIDTH_FOR_FULL_WEEK
         val habitColor = Color(widgetData.habit.color)
 
+        val context = LocalContext.current
+        val launchIntent = remember { getLaunchAppIntent(context) }
+
         Row(
             modifier = GlanceModifier
                 .fillMaxSize()
                 .background(GlanceTheme.colors.surface)
-                .padding(12.dp),
+                .padding(12.dp)
+                .clickable(actionStartActivity(launchIntent)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -196,7 +203,7 @@ class HabitWidget : GlanceAppWidget() {
     }
 
     @Composable
-    fun HabitDot(
+    private fun HabitDot(
         state: DayState,
         habitColor: Color,
         isToday: Boolean = false,
@@ -247,7 +254,7 @@ class HabitWidget : GlanceAppWidget() {
         }
     }
 
-    fun createCircleBitmap(
+    private fun createCircleBitmap(
         sizePx: Int,
         dotRadiusPx: Float,
         fillColor: Color,
@@ -281,4 +288,11 @@ class HabitWidget : GlanceAppWidget() {
 
         return bmp
     }
+
+    private fun getLaunchAppIntent(context: Context): Intent {
+        return context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        } ?: Intent()
+    }
+
 }
