@@ -50,6 +50,8 @@ dependencies {
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.dagger.hilt.android.compiler)
 
+    implementation(libs.androidx.material3)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

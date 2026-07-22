@@ -3,6 +3,7 @@ package com.dyusov.core.widget
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -45,6 +46,7 @@ import com.dyusov.core.common.datetime.nowClock
 import com.dyusov.core.common.datetime.toLocalDate
 import com.dyusov.core.common.utils.MyResult
 import com.dyusov.core.model.HabitWithCompletions
+import com.dyusov.core.ui.utils.toPastel
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
@@ -142,15 +144,24 @@ class HabitWidget : GlanceAppWidget() {
 
         val widgetSize = LocalSize.current
         val canShowFullWeek = widgetSize.width >= MIN_WIDTH_FOR_FULL_WEEK
-        val habitColor = Color(widgetData.habit.color)
+        val habitColor = widgetData.habit.color
 
         val context = LocalContext.current
         val launchIntent = remember { getLaunchAppIntent(context) }
 
+        val isDark = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+
         Row(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .background(GlanceTheme.colors.surface)
+                .background(
+                    Color(
+                        habitColor.toPastel(
+                            lightnessFactor = if (isDark) 0.15f else 0.85f,
+                            darkTheme = isDark
+                        )
+                    )
+                )
                 .padding(12.dp)
                 .clickable(actionStartActivity(launchIntent)),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -165,7 +176,10 @@ class HabitWidget : GlanceAppWidget() {
             ) {
                 Text(
                     text = widgetData.habit.name,
-                    style = TextStyle(fontSize = 14.sp)
+                    style = TextStyle(
+                        color = GlanceTheme.colors.onBackground,
+                        fontSize = 14.sp
+                    )
                 )
             }
 
@@ -182,7 +196,7 @@ class HabitWidget : GlanceAppWidget() {
                         val targetDate = weekDates[index]
                         HabitDot(
                             state = state,
-                            habitColor = habitColor,
+                            habitColor = Color(habitColor),
                             trailingSpace = index < weekStates.size - 1,
                             isToday = targetDate == today
                         )
@@ -192,7 +206,7 @@ class HabitWidget : GlanceAppWidget() {
                     if (currentDayIndex != -1) {
                         HabitDot(
                             state = weekStates[currentDayIndex],
-                            habitColor = habitColor,
+                            habitColor = Color(habitColor),
                             trailingSpace = false,
                             isToday = true
                         )
