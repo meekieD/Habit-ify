@@ -4,7 +4,7 @@
 
 An Android habit tracker for creating recurring habits, marking them complete, and reviewing progress through streaks, stats, and a calendar view.
 
-[<img src="https://www.rustore.ru/help/icons/logo-color-dark.png" height="63" alt="Download on the RuStore">](https://www.rustore.ru/catalog/app/com.dyusov.habit_ify)[<img src="https://user-images.githubusercontent.com/663460/26973090-f8fdc986-4d14-11e7-995a-e7c5e79ed925.png" height="70" alt="Download APK from Github">](https://github.com/meekieD/Habit-ify/releases/latest/download/Habitify_1.0.1.apk)
+[<img src="https://www.rustore.ru/help/icons/logo-color-dark.png" height="63" alt="Download on the RuStore">](https://www.rustore.ru/catalog/app/com.dyusov.habit_ify)[<img src="https://user-images.githubusercontent.com/663460/26973090-f8fdc986-4d14-11e7-995a-e7c5e79ed925.png" height="70" alt="Download APK from Github">](https://github.com/meekieD/Habit-ify/releases/latest/download/Habitify_2.0.0.apk)
 
 ## Overview
 
