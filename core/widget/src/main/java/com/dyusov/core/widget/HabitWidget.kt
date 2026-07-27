@@ -3,7 +3,6 @@ package com.dyusov.core.widget
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -39,6 +38,7 @@ import androidx.glance.layout.size
 import androidx.glance.layout.width
 import androidx.glance.layout.wrapContentWidth
 import androidx.glance.state.PreferencesGlanceStateDefinition
+import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import com.dyusov.core.common.datetime.DateTimeProvider
@@ -46,7 +46,6 @@ import com.dyusov.core.common.datetime.nowClock
 import com.dyusov.core.common.datetime.toLocalDate
 import com.dyusov.core.common.utils.MyResult
 import com.dyusov.core.model.HabitWithCompletions
-import com.dyusov.core.ui.utils.toPastel
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
@@ -149,19 +148,10 @@ class HabitWidget : GlanceAppWidget() {
         val context = LocalContext.current
         val launchIntent = remember { getLaunchAppIntent(context) }
 
-        val isDark = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-
         Row(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .background(
-                    Color(
-                        habitColor.toPastel(
-                            lightnessFactor = if (isDark) 0.15f else 0.85f,
-                            darkTheme = isDark
-                        )
-                    )
-                )
+                .background(GlanceTheme.colors.surface)
                 .padding(12.dp)
                 .clickable(actionStartActivity(launchIntent)),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -177,7 +167,8 @@ class HabitWidget : GlanceAppWidget() {
                 Text(
                     text = widgetData.habit.name,
                     style = TextStyle(
-                        color = GlanceTheme.colors.onBackground,
+                        fontWeight = FontWeight.Medium,
+                        color = GlanceTheme.colors.onSurfaceVariant,
                         fontSize = 14.sp
                     )
                 )
