@@ -125,6 +125,7 @@ core/
   domain/        use cases and streak calculation logic
   designsystem/  theme state and persistence
   model/         domain models
+  widget/        widget for tracking progress
   ui/            reusable UI primitives
 feature/
   habit-agenda/
