@@ -16,6 +16,7 @@ kotlinxSerializationJson = "1.9.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.12.1"
 composeBom = "2025.12.00"
+material = "1.14.0"
 material3AdaptiveNavigationSuite = "1.5.0-alpha14"
 material3 = "1.4.0"
 materialIconsExtended = "1.7.8"
@@ -71,6 +72,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 converter-kotlinx-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 [plugins]
